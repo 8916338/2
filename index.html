@@ -90,6 +90,8 @@ body{
 .st.mid{color:var(--warn);background:var(--warn-soft)}
 .st.bad{color:var(--off);background:var(--off-soft)}
 .st.wt{color:var(--dim2);background:var(--off-soft)}
+.st.btn-chk{background:var(--acc);color:#fff;cursor:pointer;transition:.15s}
+.st.btn-chk:hover{filter:brightness(.94)}
 .card .desc{margin:5px 0 0;color:var(--dim);font-size:12.5px;line-height:1.6}
 .meta-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
 .gtag{font-size:11px;border-radius:5px;padding:1.5px 7px;background:var(--acc-soft);color:var(--acc);font-weight:600;white-space:nowrap}
@@ -216,6 +218,7 @@ body{
 
   var RAW = null, DATA = null;
   var runToken = 0;
+  var pending = [];
 
   var state = {
     group: 'all', status: 'all', keyword: '',
@@ -429,7 +432,9 @@ body{
   function statusMeta(it) {
     if (it._status === 'ok') return { cls: it._lat >= SLOW_MS ? 'mid' : 'ok', text: it._lat + ' ms' };
     if (it._status === 'bad') return { cls: 'bad', text: '离线' };
-    return { cls: 'wait', text: '未检测' };
+    var checking = it._urls.some(function (u) { return u.status === 'checking'; });
+    if (checking) return { cls: 'wait', text: '检测中' };
+    return { cls: 'wait', text: '未检测', clickable: true };
   }
 
   function blockHtml(it, b) {
@@ -439,10 +444,16 @@ body{
       case 'header':
         var logo = b.logo && it.logo ? '<img class="logo" src="' + esc(it.logo) + '" alt="" loading="lazy">' : '';
         var name = it[b.field || 'name'] || '';
-        var pill = (b.status !== false && it._urls.length) ? statusMeta(it) : null;
-        return '<div class="ctop">' + logo + '<h3>' + esc(name) + '</h3>' +
-          (pill ? '<span class="spacer"></span><span class="st ' + pill.cls + '">' + pill.text + '</span>' : '') +
-        '</div>';
+        var pillHtml = '';
+        if (b.status !== false && it._urls.length) {
+          var sm = statusMeta(it);
+          if (sm.clickable) {
+            pillHtml = '<span class="spacer"></span><span class="st btn-chk" data-i="' + it._i + '" role="button" tabindex="0">检测</span>';
+          } else {
+            pillHtml = '<span class="spacer"></span><span class="st ' + sm.cls + '">' + esc(sm.text) + '</span>';
+          }
+        }
+        return '<div class="ctop">' + logo + '<h3>' + esc(name) + '</h3>' + pillHtml + '</div>';
 
       case 'text':
         return v ? '<p class="desc">' + esc(v) + '</p>' : '';
@@ -488,12 +499,21 @@ body{
           : '<div class="irow ' + esc(b.kind || 'lk') + '">';
         var tagClose = href ? '</a>' : '</div>';
 
+        var rpillHtml = '';
+        if (rpill) {
+          if (rpill.clickable) {
+            rpillHtml = '<span class="st btn-chk" data-i="' + it._i + '" role="button" tabindex="0">检测</span>';
+          } else {
+            rpillHtml = '<span class="st ' + rpill.cls + '">' + esc(rpill.text) + '</span>';
+          }
+        }
+
         return tagOpen + ic +
           '<div class="bd"><div class="tt"><h3>' + esc(title) + '</h3>' +
             (meta ? '<span class="v">' + esc(meta) + '</span>' : '') +
           '</div>' +
           (desc ? '<p class="d">' + esc(desc) + '</p>' : '') + '</div>' +
-          (rpill ? '<span class="st ' + rpill.cls + '">' + rpill.text + '</span>' : '') +
+          rpillHtml +
           (act ? '<span class="go">' + esc(act) + '</span>' : '') +
           tagClose;
       }
@@ -622,8 +642,21 @@ body{
       var card = li.closest('.card');
       if (card) {
         var sm = statusMeta(it);
-        var st = card.querySelector('.st');
-        if (st) { st.className = 'st ' + sm.cls; st.textContent = sm.text; }
+        var st = card.querySelector('.ctop .st') || card.querySelector('.irow .st');
+        if (st) {
+          if (sm.clickable) {
+            st.className = 'st btn-chk';
+            st.textContent = '检测';
+            st.setAttribute('data-i', it._i);
+            st.setAttribute('role', 'button');
+            if (!st.hasAttribute('tabindex')) st.setAttribute('tabindex', '0');
+          } else {
+            st.className = 'st ' + sm.cls;
+            st.textContent = sm.text;
+            st.removeAttribute('data-i');
+            st.removeAttribute('role');
+          }
+        }
       }
     }
     updateCounts();
@@ -733,22 +766,7 @@ body{
     });
   }
 
-  function runCheck(fresh) {
-    var token = ++runToken;
-
-    if (fresh) resetAll();
-
-    var priorityGroup = state.group;
-
-    if (state.status !== 'all' || state.group !== 'all' || state.keyword) {
-      state.status = 'all';
-      state.group = 'all';
-      state.keyword = '';
-      el('q').value = '';
-      el('qClear').style.display = 'none';
-      renderGroups();
-    }
-
+  function buildPending(priorityGroup) {
     var first = [], rest = [];
     DATA.items.forEach(function (it) {
       it._urls.forEach(function (u) {
@@ -759,13 +777,28 @@ body{
         }
       });
     });
-    var queue = first.concat(rest);
+    return first.concat(rest);
+  }
+
+  function runCheck(fresh) {
+    var token = ++runToken;
+
+    if (fresh) resetAll();
+
+    if (state.status !== 'all' || state.keyword) {
+      state.status = 'all';
+      state.keyword = '';
+      el('q').value = '';
+      el('qClear').style.display = 'none';
+    }
+
+    pending = buildPending(state.group);
 
     state.phase = 'running';
     updateCheckButton();
     render();
 
-    if (!queue.length) {
+    if (!pending.length) {
       state.phase = 'done';
       updateCheckButton();
       setProgress('检测完成', false);
@@ -775,11 +808,10 @@ body{
 
     updateProgress();
 
-    var idx = 0;
     function worker() {
       if (token !== runToken) return Promise.resolve();
-      if (idx >= queue.length) return Promise.resolve();
-      var job = queue[idx++];
+      var job = pending.shift();
+      if (!job) return Promise.resolve();
       job.u.status = 'checking';
       patchUrl(job.u.uid);
       return probe(job.u.url).then(function (r) {
@@ -793,7 +825,8 @@ body{
     }
 
     var workers = [];
-    for (var i = 0; i < Math.min(CONCURRENCY, queue.length); i++) workers.push(worker());
+    var initial = Math.min(CONCURRENCY, pending.length);
+    for (var i = 0; i < initial; i++) workers.push(worker());
 
     Promise.all(workers).then(function () {
       if (token !== runToken) return;
@@ -809,6 +842,7 @@ body{
     if (state.phase !== 'running') return;
     runToken++;
     state.phase = 'stopped';
+    pending = [];
     DATA.items.forEach(function (it) {
       it._urls.forEach(function (u) { if (u.status === 'checking') u.status = 'wait'; });
       itemStatus(it);
@@ -816,6 +850,57 @@ body{
     updateCheckButton();
     render();
     setProgress('已停止', false);
+  }
+
+  function checkSingle(it) {
+    if (state.phase === 'running') {
+      runToken++;
+      pending = [];
+      DATA.items.forEach(function (x) {
+        x._urls.forEach(function (u) { if (u.status === 'checking') u.status = 'wait'; });
+        itemStatus(x);
+      });
+      state.phase = 'stopped';
+    }
+
+    var token = ++runToken;
+
+    it._urls.forEach(function (u) {
+      u.status = 'wait';
+      u.lat = null;
+    });
+    it._status = 'wait';
+    it._lat = null;
+
+    state.phase = 'running';
+    updateCheckButton();
+    render();
+    setProgress('检测中', true);
+
+    var idx = 0;
+    function worker() {
+      if (token !== runToken) return Promise.resolve();
+      if (idx >= it._urls.length) return Promise.resolve();
+      var u = it._urls[idx++];
+      u.status = 'checking';
+      patchUrl(u.uid);
+      return probe(u.url).then(function (r) {
+        if (token !== runToken) return;
+        u.status = r.ok ? 'ok' : 'bad';
+        u.lat = r.ok ? r.lat : null;
+        patchUrl(u.uid);
+        return worker();
+      });
+    }
+
+    worker().then(function () {
+      if (token !== runToken) return;
+      state.phase = 'stopped';
+      updateCheckButton();
+      render();
+      setProgress('单条检测完成', false);
+      setTimeout(function () { if (state.phase === 'stopped') setProgress('已暂停', false); }, 2600);
+    });
   }
 
   el('q').addEventListener('input', function (e) {
@@ -843,6 +928,9 @@ body{
     }
     renderGroups();
     render();
+    if (state.phase === 'running') {
+      pending = buildPending(state.group);
+    }
   });
 
   el('btnCheck').addEventListener('click', function () {
@@ -871,6 +959,14 @@ body{
   });
 
   listEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('.btn-chk');
+    if (btn) {
+      e.preventDefault();
+      var i = +btn.getAttribute('data-i');
+      var it = DATA.items[i];
+      if (it) checkSingle(it);
+      return;
+    }
     var cp = e.target.closest('.cp');
     if (!cp) return;
     e.preventDefault();
