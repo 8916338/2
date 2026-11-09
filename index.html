@@ -3,21 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TVBox 接口导航</title>
-<!--
-  ============================================================
-  TVBox 接口导航 · 单文件页面（数据与视图分离）
-  ------------------------------------------------------------
-  数据与渲染规则都在页面底部的 DATA 脚本块里。
-  新增 / 增删内容只改 JSON，不动 HTML：
-    items[]            条目本身（name / desc / group / tags / source / urls…）
-                       type 决定模板：api（默认）/ download / link / media
-                       下载、快链条目用单数 url + icon + 可选 version
-    卡片模板内置在 JS 的 RENDER 里，JSON 只需给条目写 type：
-                       api（默认）/ download / link / media
-  改数据：直接改下面 DATA 里的 JSON。
-  ============================================================
--->
+<title>好多接口</title>
 <style>
 :root{
   --bg:#f4f5f7; --card:#ffffff; --fg:#171a1f; --dim:#6b7280; --dim2:#9aa3b2;
@@ -43,12 +29,8 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 .wrap{max-width:1040px;margin:0 auto;padding:20px 16px 90px}
-
-/* ---------- 顶部 ---------- */
 .head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .head h1{margin:0;font-size:20px;letter-spacing:.2px;font-weight:700}
-
-/* ---------- 工具栏 ---------- */
 .toolbar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0 0}
 .toolbar .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .btn{
@@ -68,7 +50,6 @@ body{
 .progress{margin-left:auto;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
 .pulse{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
-
 .search{position:relative;margin:6px 0 8px}
 .search input{
   width:100%;height:40px;padding:0 40px 0 38px;border:1px solid var(--line);border-radius:11px;
@@ -78,8 +59,6 @@ body{
 .search .mag{position:absolute;left:13px;top:10px;color:var(--dim2);font-size:16px;pointer-events:none}
 .search .clear{position:absolute;right:8px;top:7px;width:26px;height:26px;border:0;background:transparent;color:var(--dim2);cursor:pointer;border-radius:6px;font-size:16px;display:none}
 .search .clear:hover{color:var(--acc);background:var(--soft)}
-
-/* ---------- 分组 ---------- */
 .groups{display:flex;gap:7px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .groups::-webkit-scrollbar{display:none}
 .chip{
@@ -93,8 +72,6 @@ body{
 .chip.active .c{opacity:.75}
 .chip.res{color:var(--dim2);border-style:dashed}
 .chip.res.active{background:var(--off);border-color:var(--off);color:#fff;border-style:solid}
-
-/* ---------- 卡片（通用容器） ---------- */
 .card{
   background:var(--card);border:1px solid var(--line);border-radius:14px;
   padding:12px 15px;margin-bottom:10px;box-shadow:var(--shadow);
@@ -123,8 +100,6 @@ body{
 .src::after{content:"↗";font-size:10px;opacity:.7}
 .lnk{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--acc);text-decoration:none;background:var(--acc-soft);border-radius:6px;padding:3px 9px}
 .lnk:hover{filter:brightness(.96);text-decoration:underline}
-
-/* ---------- 行式卡片：下载 / 推荐链接（JSON 的 row 块） ---------- */
 .card.dl,.card.lk{padding:10px 12px}
 .irow{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;min-width:0}
 .irow .ic{
@@ -161,7 +136,6 @@ body{
   .irow .go{padding:5px 10px;font-size:11.5px;border-radius:7px}
   .irow .d{white-space:normal;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
 }
-
 .urls{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .urls li{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:9px;padding:6px 9px;min-width:0}
 .dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--dim2)}
@@ -179,11 +153,8 @@ body{
 .cp{flex:none;border:1px solid var(--line);background:var(--card);color:var(--dim);font-size:11px;border-radius:6px;padding:3px 8px;cursor:pointer;transition:.15s;font-family:inherit}
 .cp:hover{color:var(--acc);border-color:var(--acc)}
 .cp.ok{color:var(--ok);border-color:var(--ok)}
-
 .empty{text-align:center;color:var(--dim);padding:56px 20px;font-size:13.5px}
 .empty .big{font-size:26px;display:block;margin-bottom:8px;opacity:.5}
-
-/* ---------- 提示 ---------- */
 .toast{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);z-index:80;
   background:var(--fg);color:var(--bg);font-size:12.5px;padding:8px 14px;border-radius:8px;
@@ -191,7 +162,6 @@ body{
 }
 .toast.show{opacity:1;transform:translateX(-50%)}
 .foot{margin-top:22px;text-align:center;color:var(--dim2);font-size:11.5px;line-height:1.8}
-
 @media (max-width:640px){
   .wrap{padding:14px 12px 80px}
   .head h1{font-size:18px}
@@ -204,9 +174,8 @@ body{
 </head>
 <body>
 <div class="wrap">
-
   <div class="head">
-    <h1 id="title">TVBox 接口导航</h1>
+    <h1 id="title">好多接口</h1>
   </div>
 
   <div class="toolbar">
@@ -234,75 +203,27 @@ body{
 
 <div class="toast" id="toast"></div>
 
-<script id="DATA" type="application/json">{
+<script id="DATA" type="application/json">
+
+{
   "version": 3,
   "site": {
-    "title": "TVBox 接口导航",
+    "title": "好多接口",
     "footer": "数据来自网络公开资源，仅供学习与测试，请勿用于商业用途；接口可用性随时变化，请以实际检测为准。"
   },
   "groups": [
-    {
-      "id": "single",
-      "name": "单仓源",
-      "isApi": true
-    },
-    {
-      "id": "multi",
-      "name": "多仓源",
-      "isApi": true
-    },
-    {
-      "id": "live",
-      "name": "直播源",
-      "isApi": true
-    },
-    {
-      "id": "cat",
-      "name": "猫源",
-      "isApi": true
-    },
-    {
-      "id": "music",
-      "name": "音源",
-      "isApi": true
-    },
-    {
-      "id": "book",
-      "name": "书源",
-      "isApi": true
-    },
-    {
-      "id": "comic",
-      "name": "漫画源",
-      "isApi": true
-    },
-    {
-      "id": "danmu",
-      "name": "弹幕",
-      "isApi": true
-    },
-    {
-      "id": "shell",
-      "name": "空壳",
-      "isApi": false,
-      "res": true
-    },
-    {
-      "id": "fast",
-      "name": "快链",
-      "isApi": false
-    },
-    {
-      "id": "download",
-      "name": "下载",
-      "isApi": false
-    },
-    {
-      "id": "other",
-      "name": "其他",
-      "isApi": false,
-      "res": true
-    }
+    { "id": "single", "name": "单仓源", "isApi": true },
+    { "id": "multi", "name": "多仓源", "isApi": true },
+    { "id": "live", "name": "直播源", "isApi": true },
+    { "id": "cat", "name": "猫源", "isApi": true },
+    { "id": "music", "name": "音源", "isApi": true },
+    { "id": "book", "name": "书源", "isApi": true },
+    { "id": "comic", "name": "漫画源", "isApi": true },
+    { "id": "danmu", "name": "弹幕", "isApi": true },
+    { "id": "shell", "name": "空壳", "isApi": false, "res": true },
+    { "id": "fast", "name": "快链", "isApi": false },
+    { "id": "download", "name": "下载", "isApi": false },
+    { "id": "other", "name": "其他", "isApi": false, "res": true }
   ],
   "weights": {
     "轮替占位": 1,
@@ -335,50 +256,29 @@ body{
       "name": "更新专用接口",
       "desc": "每日更新的综合点播线路，影视仓 / OK影视均可直接用",
       "group": "single",
-      "tags": [
-        "综合",
-        "日更"
-      ],
+      "tags": ["综合", "日更"],
       "source": [
-        {
-          "name": "TvBox 资源导航",
-          "url": "https://tvbox.shenzjd.com"
-        }
+        { "name": "TvBox 资源导航", "url": "https://tvbox.shenzjd.com" }
       ],
-      "urls": [
-        "https://0.12yue.de5.net/0/666"
-      ]
+      "urls": ["https://0.12yue.de5.net/0/666"]
     },
     {
       "name": "菠菜园pro",
       "desc": "X4 内核，菠菜园进阶版，直播与点播混排",
       "group": "single",
-      "tags": [
-        "X4"
-      ],
+      "tags": ["X4"],
       "source": [
-        {
-          "name": "TvBox 资源导航",
-          "url": "https://tvbox.shenzjd.com"
-        }
+        { "name": "TvBox 资源导航", "url": "https://tvbox.shenzjd.com" }
       ],
-      "urls": [
-        "https://0.12yue.de5.net/5/x4pro.json"
-      ]
+      "urls": ["https://0.12yue.de5.net/5/x4pro.json"]
     },
     {
       "name": "饭太硬",
       "desc": "混合线路，荐片等资源，长期稳定，镜像最多",
       "group": "single",
-      "tags": [
-        "混合",
-        "荐片"
-      ],
+      "tags": ["混合", "荐片"],
       "source": [
-        {
-          "name": "推荐·海量接口备份",
-          "url": "https://1.wudaozhe.net"
-        }
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
       ],
       "urls": [
         "http://www.饭太硬.net/tv",
@@ -393,14 +293,9 @@ body{
       "name": "摸鱼",
       "desc": "摸鱼儿维护，网盘与直链混合，更新频繁",
       "group": "single",
-      "tags": [
-        "网盘"
-      ],
+      "tags": ["网盘"],
       "source": [
-        {
-          "name": "推荐·海量接口备份",
-          "url": "https://1.wudaozhe.net"
-        }
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
       ],
       "urls": [
         "http://我不是.摸鱼儿.top",
@@ -412,15 +307,9 @@ body{
       "name": "王二小",
       "desc": "以网盘 4K 为主，适合有网盘会员的用户",
       "group": "single",
-      "tags": [
-        "4K",
-        "网盘"
-      ],
+      "tags": ["4K", "网盘"],
       "source": [
-        {
-          "name": "TvBox 资源导航",
-          "url": "https://tvbox.shenzjd.com"
-        }
+        { "name": "TvBox 资源导航", "url": "https://tvbox.shenzjd.com" }
       ],
       "urls": [
         "https://9280.kstore.vip/aiwex.json",
@@ -432,14 +321,9 @@ body{
       "name": "潇洒",
       "desc": "综合高清线路，Github 与凯速双托管",
       "group": "single",
-      "tags": [
-        "高清"
-      ],
+      "tags": ["高清"],
       "source": [
-        {
-          "name": "推荐·海量接口备份",
-          "url": "https://1.wudaozhe.net"
-        }
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
       ],
       "urls": [
         "https://9877.kstore.space/sun.json",
@@ -451,14 +335,9 @@ body{
       "name": "嗷呜",
       "desc": "英格里希嗷呜维护，多域名轮换",
       "group": "single",
-      "tags": [
-        "多线"
-      ],
+      "tags": ["多线"],
       "source": [
-        {
-          "name": "推荐·海量接口备份",
-          "url": "https://1.wudaozhe.net"
-        }
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
       ],
       "urls": [
         "http://www.英格里希嗷呜.top/tv",
@@ -470,31 +349,19 @@ body{
       "name": "聚玩",
       "desc": "小盒子系，点播线路较全",
       "group": "single",
-      "tags": [
-        "小盒子"
-      ],
+      "tags": ["小盒子"],
       "source": [
-        {
-          "name": "聚玩盒子",
-          "url": "https://www.juwanhezi.com/jsonlist"
-        }
+        { "name": "聚玩盒子", "url": "https://www.juwanhezi.com/jsonlist" }
       ],
-      "urls": [
-        "http://xhztv.top/xhz"
-      ]
+      "urls": ["http://xhztv.top/xhz"]
     },
     {
       "name": "小盒子多仓",
       "desc": "空壳多仓订阅，一次导入全部线路",
       "group": "multi",
-      "tags": [
-        "多仓"
-      ],
+      "tags": ["多仓"],
       "source": [
-        {
-          "name": "聚玩盒子",
-          "url": "https://www.juwanhezi.com/jsonlist"
-        }
+        { "name": "聚玩盒子", "url": "https://www.juwanhezi.com/jsonlist" }
       ],
       "urls": [
         "http://xhztv.top/dc",
@@ -505,192 +372,111 @@ body{
       "name": "拾光多仓",
       "desc": "拾光整理的 SVIP 多仓合集",
       "group": "multi",
-      "tags": [
-        "多仓",
-        "SVIP"
-      ],
+      "tags": ["多仓", "SVIP"],
       "source": [
-        {
-          "name": "聚玩盒子",
-          "url": "https://www.juwanhezi.com/jsonlist"
-        }
+        { "name": "聚玩盒子", "url": "https://www.juwanhezi.com/jsonlist" }
       ],
-      "urls": [
-        "http://xmbjm.fh4u.org/dc.txt"
-      ]
+      "urls": ["http://xmbjm.fh4u.org/dc.txt"]
     },
     {
       "name": "Kimentanm 直播源",
       "desc": "APTV 作者的 IPTV 源，IPv4 为主",
       "group": "live",
-      "tags": [
-        "IPTV"
-      ],
+      "tags": ["IPTV"],
       "source": [
-        {
-          "name": "TvBox 资源导航",
-          "url": "https://tvbox.shenzjd.com"
-        }
+        { "name": "TvBox 资源导航", "url": "https://tvbox.shenzjd.com" }
       ],
-      "urls": [
-        "https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u"
-      ]
+      "urls": ["https://raw.githubusercontent.com/Kimentanm/aptv/master/m3u/iptv.m3u"]
     },
     {
       "name": "Guovin 直播源",
       "desc": "自动更新聚合源，频道多、体积大",
       "group": "live",
-      "tags": [
-        "IPTV",
-        "日更"
-      ],
+      "tags": ["IPTV", "日更"],
       "source": [
-        {
-          "name": "TvBox 资源导航",
-          "url": "https://tvbox.shenzjd.com"
-        }
+        { "name": "TvBox 资源导航", "url": "https://tvbox.shenzjd.com" }
       ],
-      "urls": [
-        "https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u"
-      ]
+      "urls": ["https://raw.githubusercontent.com/Guovin/iptv-api/gd/output/result.m3u"]
     },
     {
       "name": "CatVodSpider 演示源",
       "desc": "猫影视 / CatVod 格式，需要支持猫源的壳子",
       "group": "cat",
-      "tags": [
-        "CatVod"
-      ],
+      "tags": ["CatVod"],
       "source": [
-        {
-          "name": "TvBox 资源导航",
-          "url": "https://tvbox.shenzjd.com"
-        }
+        { "name": "TvBox 资源导航", "url": "https://tvbox.shenzjd.com" }
       ],
-      "urls": [
-        "https://raw.githubusercontent.com/ggrrttyyiii/CatVodSpider/refs/heads/main/json/demo.json"
-      ]
+      "urls": ["https://raw.githubusercontent.com/ggrrttyyiii/CatVodSpider/refs/heads/main/json/demo.json"]
     },
     {
       "name": "音源合集",
       "desc": "音乐源整合，壳子需支持音源模块",
       "group": "music",
-      "tags": [
-        "音乐"
-      ],
+      "tags": ["音乐"],
       "source": [
-        {
-          "name": "推荐·海量接口备份",
-          "url": "https://1.wudaozhe.net"
-        }
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
       ],
-      "urls": [
-        "https://1.wudaozhe.net/cy/音源.json"
-      ]
+      "urls": ["https://1.wudaozhe.net/cy/音源.json"]
     },
     {
       "name": "书源合集",
       "desc": "阅读 3.0 书源，条目极多，导入需耐心",
       "group": "book",
-      "tags": [
-        "阅读"
-      ],
+      "tags": ["阅读"],
       "source": [
-        {
-          "name": "各种源大型整合",
-          "url": "https://source.zgqinc.gq"
-        }
+        { "name": "各种源大型整合", "url": "https://source.zgqinc.gq" }
       ],
-      "urls": [
-        "https://source-repo.zgqinc.gq/legado3/bookSource/bookSource_1.json"
-      ]
+      "urls": ["https://source-repo.zgqinc.gq/legado3/bookSource/bookSource_1.json"]
     },
     {
       "name": "漫画源合集",
       "desc": "漫画源整合，配合漫画壳子使用",
       "group": "comic",
-      "tags": [
-        "漫画"
-      ],
+      "tags": ["漫画"],
       "source": [
-        {
-          "name": "推荐·海量接口备份",
-          "url": "https://1.wudaozhe.net"
-        }
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
       ],
-      "urls": [
-        "https://1.wudaozhe.net/cy/漫画源.json"
-      ]
+      "urls": ["https://1.wudaozhe.net/cy/漫画源.json"]
     },
     {
       "name": "弹幕接口",
       "desc": "弹幕数据源，壳子内配置弹幕地址用",
       "group": "danmu",
-      "tags": [
-        "弹幕"
-      ],
+      "tags": ["弹幕"],
       "source": [
-        {
-          "name": "推荐·海量接口备份",
-          "url": "https://1.wudaozhe.net"
-        }
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
       ],
-      "urls": [
-        "https://1.wudaozhe.net/cy/弹幕.json"
-      ]
+      "urls": ["https://1.wudaozhe.net/cy/弹幕.json"]
     },
     {
       "name": "影视仓（FongMi Release）",
       "desc": "空壳软件下载页，装好后自行导入上面的接口",
       "group": "shell",
-      "tags": [
-        "APK",
-        "空壳"
-      ],
+      "tags": ["APK", "空壳"],
       "source": [
-        {
-          "name": "qist/tvbox",
-          "url": "https://github.com/qist/tvbox"
-        }
+        { "name": "qist/tvbox", "url": "https://github.com/qist/tvbox" }
       ],
-      "urls": [
-        "https://github.com/FongMi/Release"
-      ]
+      "urls": ["https://github.com/FongMi/Release"]
     },
     {
       "name": "TVBox 手机版",
       "desc": "手机竖屏版空壳，适合安卓手机直接装",
       "group": "shell",
-      "tags": [
-        "APK",
-        "手机"
-      ],
+      "tags": ["APK", "手机"],
       "source": [
-        {
-          "name": "qist/tvbox",
-          "url": "https://github.com/qist/tvbox"
-        }
+        { "name": "qist/tvbox", "url": "https://github.com/qist/tvbox" }
       ],
-      "urls": [
-        "https://github.com/o0HalfLife0o/TVBoxOSC/releases"
-      ]
+      "urls": ["https://github.com/o0HalfLife0o/TVBoxOSC/releases"]
     },
     {
       "name": "JSON 校验工具",
       "desc": "编辑接口 JSON 后用来查语法错误",
       "group": "other",
-      "tags": [
-        "工具"
-      ],
+      "tags": ["工具"],
       "source": [
-        {
-          "name": "TvBox 资源导航",
-          "url": "https://tvbox.shenzjd.com"
-        }
+        { "name": "TvBox 资源导航", "url": "https://tvbox.shenzjd.com" }
       ],
-      "urls": [
-        "https://jsonlint.com"
-      ]
+      "urls": ["https://jsonlint.com"]
     },
     {
       "name": "真心下载包",
@@ -700,9 +486,7 @@ body{
       "icon": "https://plum.now61.cn/f/WBto/%E7%9C%9F%E5%BF%83.jpg",
       "version": "20260815",
       "desc": "整包离线导入，解压后本地加载",
-      "tags": [
-        "离线包"
-      ]
+      "tags": ["离线包"]
     },
     {
       "name": "归零box",
@@ -750,619 +534,626 @@ body{
       "desc": "影视仓配置与教程"
     }
   ]
-}</script>
+}
+
+</script>
 
 <script>
-(function(){
-'use strict';
+(function () {
+  'use strict';
 
-var TIMEOUT_MS = 12000;   // 单条超时
-var CONCURRENCY = 6;      // 并发数
-var SLOW_MS = 1500;       // 超过则标黄
-var NO_W = 1e9;           // 未配置权重的哨兵值
+  var TIMEOUT_MS = 12000;
+  var CONCURRENCY = 6;
+  var SLOW_MS = 1500;
+  var NO_W = 1e9;
 
-var DEFAULT_JSON = document.getElementById('DATA').textContent;
-var RAW = null, DATA = null;
+  var DEFAULT_JSON = document.getElementById('DATA').textContent;
+  var RAW = null, DATA = null;
 
-var state = {
-  group: 'all', status: 'all', keyword: '',
-  detecting: false, abort: false, done: 0, total: 0,
-  seed: 0, pinIdx: -1
-};
+  var state = {
+    group: 'all', status: 'all', keyword: '',
+    detecting: false, abort: false, done: 0, total: 0,
+    seed: 0, pinIdx: -1
+  };
 
-function el(id){ return document.getElementById(id); }
-var listEl = el('list'), groupsEl = el('groups');
+  function el(id) { return document.getElementById(id); }
+  var listEl = el('list'), groupsEl = el('groups');
 
-// 图片字段加载失败时自动隐藏，避免 JSON 里写错地址出现破图
-document.addEventListener('error', function(e){
-  if (e.target && e.target.tagName === 'IMG') e.target.style.display = 'none';
-}, true);
+  document.addEventListener('error', function (e) {
+    if (e.target && e.target.tagName === 'IMG') e.target.style.display = 'none';
+  }, true);
 
-/* ================= 工具 ================= */
-function esc(s){
-  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
-}
-function showUrl(u){ try { return decodeURI(u); } catch(e){ return u; } }
-function hash(str, seed){
-  var h = 2166136261 ^ (seed | 0);
-  for (var i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return (h >>> 0) / 4294967296;
-}
-function toast(msg){
-  var t = el('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(t._tm);
-  t._tm = setTimeout(function(){ t.classList.remove('show'); }, 1900);
-}
-
-/* ================= 归一化（数据 → 渲染对象） ================= */
-// 任意字段都能被搜索：把值拍平成文本
-function flat(v){
-  if (v == null) return '';
-  var t = typeof v;
-  if (t === 'string' || t === 'number' || t === 'boolean') return v + ' ';
-  if (Array.isArray(v)) return v.map(flat).join('');
-  if (t === 'object') return Object.keys(v).map(function(k){ return flat(v[k]); }).join('');
-  return '';
-}
-function asList(v){
-  if (!v) return [];
-  return (Array.isArray(v) ? v : [v]).filter(function(x){ return x && (x.name || x.url); });
-}
-
-/* ================= 卡片模板（内置，不在 JSON 里） =================
-   条目用 "type" 选模板：api（默认）/ download / link / media。
-   blocks 按顺序渲染，可用块：
-     header  text  group  tags  sources  urls  image  links  row
-   row（行式卡片）参数：
-     title 图标旁标题字段 / icon 图标字段 / meta 徽标字段 / desc 描述字段
-     url 链接字段 / action 按钮文案 / kind 样式(dl|lk) / download 是否加下载属性
-   ================================================================ */
-var RENDER = {
-  default: 'api',
-  types: {
-    api: {
-      blocks: [
-        { as: 'header', field: 'name' },
-        { as: 'text', field: 'desc' },
-        { as: 'group', inline: true },
-        { as: 'tags', field: 'tags', inline: true },
-        { as: 'sources', field: 'source', inline: true },
-        { as: 'urls', field: 'urls' }
-      ]
-    },
-    download: {
-      class: 'dl',
-      blocks: [
-        { as: 'row', kind: 'dl', title: 'name', icon: 'icon',
-          meta: 'version', desc: 'desc', url: 'url', action: '下载' }
-      ]
-    },
-    link: {
-      class: 'lk',
-      blocks: [
-        { as: 'row', kind: 'lk', title: 'name', icon: 'icon',
-          meta: 'version', desc: 'desc', url: 'url', action: '前往' }
-      ]
-    },
-    media: {
-      class: 'media',
-      blocks: [
-        { as: 'header', field: 'name', status: false, logo: true },
-        { as: 'image', field: 'cover', class: 'cover' },
-        { as: 'text', field: 'desc' },
-        { as: 'tags', field: 'tags', inline: true },
-        { as: 'links', field: 'links', inline: true }
-      ]
-    }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
   }
-};
 
-function normalize(raw){
-  var render = (raw.render && raw.render.types) ? raw.render : RENDER;
-  var def = render.default || 'default';
+  function showUrl(u) {
+    try { return decodeURI(u); } catch (e) { return u; }
+  }
 
-  var gs = (raw.groups || []).map(function(g, i){
+  function hash(str, seed) {
+    var h = 2166136261 ^ (seed | 0);
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0) / 4294967296;
+  }
+
+  function toast(msg) {
+    var t = el('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._tm);
+    t._tm = setTimeout(function () { t.classList.remove('show'); }, 1900);
+  }
+
+  function flat(v) {
+    if (v == null) return '';
+    var t = typeof v;
+    if (t === 'string' || t === 'number' || t === 'boolean') return v + ' ';
+    if (Array.isArray(v)) return v.map(flat).join('');
+    if (t === 'object') return Object.keys(v).map(function (k) { return flat(v[k]); }).join('');
+    return '';
+  }
+
+  function asList(v) {
+    if (!v) return [];
+    return (Array.isArray(v) ? v : [v]).filter(function (x) { return x && (x.name || x.url); });
+  }
+
+  var RENDER = {
+    default: 'api',
+    types: {
+      api: {
+        blocks: [
+          { as: 'header', field: 'name' },
+          { as: 'text', field: 'desc' },
+          { as: 'group', inline: true },
+          { as: 'tags', field: 'tags', inline: true },
+          { as: 'sources', field: 'source', inline: true },
+          { as: 'urls', field: 'urls' }
+        ]
+      },
+      download: {
+        class: 'dl',
+        blocks: [
+          { as: 'row', kind: 'dl', title: 'name', icon: 'icon',
+            meta: 'version', desc: 'desc', url: 'url', action: '下载' }
+        ]
+      },
+      link: {
+        class: 'lk',
+        blocks: [
+          { as: 'row', kind: 'lk', title: 'name', icon: 'icon',
+            meta: 'version', desc: 'desc', url: 'url', action: '前往' }
+        ]
+      },
+      media: {
+        class: 'media',
+        blocks: [
+          { as: 'header', field: 'name', status: false, logo: true },
+          { as: 'image', field: 'cover', class: 'cover' },
+          { as: 'text', field: 'desc' },
+          { as: 'tags', field: 'tags', inline: true },
+          { as: 'links', field: 'links', inline: true }
+        ]
+      }
+    }
+  };
+
+  function normalize(raw) {
+    var render = (raw.render && raw.render.types) ? raw.render : RENDER;
+    var def = render.default || 'default';
+
+    var gs = (raw.groups || []).map(function (g, i) {
+      return {
+        id: g.id || ('g' + i),
+        name: g.name || g.id || '其他',
+        isApi: g.isApi !== false,
+        res: g.res === true
+      };
+    });
+    var gm = {};
+    gs.forEach(function (g) { gm[g.id] = g; });
+
+    var W = raw.weights || {};
+
+    var items = (raw.items || []).map(function (src, i) {
+      var o = {};
+      for (var k in src) {
+        if (Object.prototype.hasOwnProperty.call(src, k)) o[k] = src[k];
+      }
+
+      var g = gm[src.group] || { id: src.group || 'other', name: '其他', isApi: false };
+      var rawList = Array.isArray(src.urls) ? src.urls.slice()
+                  : (src.urls ? [src.urls] : []);
+      if (!rawList.length && src.url) rawList.push(src.url);
+
+      var urls = rawList.map(function (u) {
+        return typeof u === 'string' ? u : (u && u.url) || '';
+      }).filter(Boolean).map(function (u, k) {
+        return { uid: i + '#' + k, url: u, status: 'wait', lat: null };
+      });
+
+      o._i = i;
+      o._type = src.type || def;
+      o._group = g.id;
+      o._groupName = g.name;
+      o._isApi = g.isApi;
+      o._res = g.res === true;
+      o._urls = urls;
+      o._status = 'wait';
+      o._lat = null;
+      o._weight = (typeof W[src.name] === 'number' && W[src.name] > 0) ? W[src.name] : NO_W;
+      o._rand = hash(i + '|' + (src.name || ''), state.seed);
+      o._hay = (flat(src) + ' ' + urls.map(function (u) { return u.url; }).join(' ')).toLowerCase();
+      return o;
+    });
+
     return {
-      id: g.id || ('g' + i), name: g.name || g.id || '其他',
-      isApi: g.isApi !== false, res: g.res === true
+      groups: gs,
+      items: items,
+      site: raw.site || {},
+      rotate: raw.rotate || {},
+      render: render
     };
-  });
-  var gm = {};
-  gs.forEach(function(g){ gm[g.id] = g; });
+  }
 
-  var W = raw.weights || {};
+  function newSeed() {
+    var rot = RAW.rotate || {};
+    var n = Number(rot.randomRange) || 10000;
+    if (rot.seed && rot.seed !== 'time-random') return Math.floor(hash(String(rot.seed), 0) * n);
+    return Math.floor(Math.random() * n);
+  }
 
-  var items = (raw.items || []).map(function(src, i){
-    var o = {};
-    for (var k in src) if (Object.prototype.hasOwnProperty.call(src, k)) o[k] = src[k];
-
-    var g = gm[src.group] || { id: src.group || 'other', name: '其他', isApi: false };
-    // urls 数组优先；没有数组时用单个 url 字段（下载包 / 推荐链接这类条目）
-    var rawList = Array.isArray(src.urls) ? src.urls.slice()
-                : (src.urls ? [src.urls] : []);
-    if (!rawList.length && src.url) rawList.push(src.url);
-
-    var urls = rawList.map(function(u){
-      return typeof u === 'string' ? u : (u && u.url) || '';
-    }).filter(Boolean).map(function(u, k){
-      return { uid: i + '#' + k, url: u, status: 'wait', lat: null };
+  function pickPin() {
+    var kws = ((RAW.rotate || {}).keywords || []).filter(Boolean).map(function (k) {
+      return String(k).toLowerCase();
     });
+    var pool = kws.length ? DATA.items.filter(function (it) {
+      return kws.some(function (k) { return it._hay.indexOf(k) !== -1; });
+    }) : DATA.items.slice();
 
-    o._i = i;
-    o._type = src.type || def;
-    o._group = g.id;
-    o._groupName = g.name;
-    o._isApi = g.isApi;
-    o._res = g.res === true;
-    o._urls = urls;
-    o._status = 'wait';
-    o._lat = null;
-    o._weight = (typeof W[src.name] === 'number' && W[src.name] > 0) ? W[src.name] : NO_W;
-    o._rand = hash(i + '|' + (src.name || ''), state.seed);
-    o._hay = (flat(src) + ' ' + urls.map(function(u){ return u.url; }).join(' ')).toLowerCase();
-    return o;
-  });
+    if (!pool.length) pool = DATA.items.slice();
+    if (!pool.length) { state.pinIdx = -1; return; }
 
-  return { groups: gs, items: items, site: raw.site || {}, rotate: raw.rotate || {}, render: render };
-}
-
-/* ================= 首条轮换（只影响排位，不加标记） ================= */
-function newSeed(){
-  var rot = RAW.rotate || {};
-  var n = Number(rot.randomRange) || 10000;
-  if (rot.seed && rot.seed !== 'time-random') return Math.floor(hash(String(rot.seed), 0) * n);
-  return Math.floor(Math.random() * n);
-}
-
-function pickPin(){
-  var kws = ((RAW.rotate || {}).keywords || []).filter(Boolean).map(function(k){
-    return String(k).toLowerCase();
-  });
-  var pool = kws.length ? DATA.items.filter(function(it){
-    return kws.some(function(k){ return it._hay.indexOf(k) !== -1; });
-  }) : DATA.items.slice();
-
-  if (!pool.length) pool = DATA.items.slice();     // 关键词没命中 → 全量兜底
-  if (!pool.length){ state.pinIdx = -1; return; }
-
-  var idx = Math.floor(hash(pool.map(function(x){ return x._i; }).join('|'), state.seed) * pool.length);
-  state.pinIdx = pool[Math.min(idx, pool.length - 1)]._i;
-}
-
-/* ================= 头部 / 分组 ================= */
-function renderHead(){
-  el('title').textContent = DATA.site.title || 'TVBox 接口导航';
-  el('foot').textContent = DATA.site.footer || '';
-}
-
-function renderGroups(){
-  var counts = {};
-  DATA.items.forEach(function(i){ counts[i._group] = (counts[i._group] || 0) + 1; });
-
-  var html = '<button class="chip' + (state.group === 'all' ? ' active' : '') +
-             '" data-g="all">全部</button>';
-  DATA.groups.forEach(function(g){
-    var n = counts[g.id] || 0;
-    if (!n) return;
-    html += '<button class="chip' + (g.res ? ' res' : '') + (state.group === g.id ? ' active' : '') +
-            '" data-g="' + esc(g.id) + '">' + esc(g.name) + ' <span class="c">' + n + '</span></button>';
-  });
-  groupsEl.innerHTML = html;
-}
-
-/* ================= 状态 =================
-   只有三种状态：延时（在线并给出毫秒数）、离线、正在检测。
-   ========================================= */
-function itemStatus(it){
-  var best = null, checking = false, allDown = it._urls.length > 0;
-  it._urls.forEach(function(u){
-    if (u.status === 'ok' && (best === null || u.lat < best)) best = u.lat;
-    if (u.status === 'checking' || u.status === 'wait') checking = true;
-    if (u.status !== 'bad') allDown = false;
-  });
-  if (best !== null){ it._status = 'ok'; it._lat = best; return; }
-  if (checking){ it._status = 'wait'; it._lat = null; return; }
-  if (allDown){ it._status = 'bad'; it._lat = null; return; }
-  it._status = 'wait'; it._lat = null;
-}
-
-function statusMeta(it){
-  if (it._status === 'ok') return { cls: it._lat >= SLOW_MS ? 'mid' : 'ok', text: it._lat + ' ms' };
-  if (it._status === 'bad') return { cls: 'bad', text: '离线' };
-  return { cls: 'wait', text: '检测中' };
-}
-
-/* ================= 通用块渲染 ================= */
-function blockHtml(it, b){
-  var v = b.field ? it[b.field] : null;
-
-  switch (b.as){
-    case 'header':
-      var logo = b.logo && it.logo ? '<img class="logo" src="' + esc(it.logo) + '" alt="" loading="lazy">' : '';
-      var name = it[b.field || 'name'] || '';
-      var pill = (b.status !== false && it._urls.length) ? statusMeta(it) : null;
-      return '<div class="ctop">' + logo + '<h3>' + esc(name) + '</h3>' +
-        (pill ? '<span class="spacer"></span><span class="st ' + pill.cls + '">' + pill.text + '</span>' : '') +
-      '</div>';
-
-    case 'text':
-      return v ? '<p class="desc">' + esc(v) + '</p>' : '';
-
-    case 'group':
-      return '<span class="gtag' + (it._res ? ' res' : '') + '">' + esc(it._groupName) + '</span>';
-
-    case 'tags':
-      return (Array.isArray(v) ? v : []).filter(Boolean).map(function(t){
-        return '<span class="tag">' + esc(t) + '</span>';
-      }).join('');
-
-    case 'sources':
-      return asList(v).map(function(s){
-        return s.url
-          ? '<a class="src" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name || s.url) + '</a>'
-          : '<span class="tag">' + esc(s.name) + '</span>';
-      }).join('');
-
-    case 'links':
-      return asList(v).map(function(s){
-        return '<a class="lnk" href="' + esc(s.url || '#') + '" target="_blank" rel="noopener">' + esc(s.name || s.url) + '</a>';
-      }).join('');
-
-    case 'image':
-      return v ? '<img class="' + esc(b.class || 'cover') + '" src="' + esc(v) + '" alt="" loading="lazy">' : '';
-
-    case 'row': {
-      var title = it[b.title || 'name'] || '';
-      var icon  = b.icon ? it[b.icon] : '';
-      var meta  = b.meta ? it[b.meta] : '';
-      var desc  = b.desc ? it[b.desc] : '';
-      var href  = b.url ? it[b.url] : (it._urls[0] ? it._urls[0].url : '');
-      var act   = b.action || '';
-      var pill  = (b.status !== false && it._urls.length) ? statusMeta(it) : null;
-      if (!title) return '';
-
-      var ic = '<span class="ic"><i>' + esc(String(title).charAt(0)) + '</i>' +
-               (icon ? '<img src="' + esc(icon) + '" alt="">' : '') + '</span>';
-      var tagOpen = href
-        ? '<a class="irow ' + esc(b.kind || 'lk') + '" href="' + esc(href) + '" target="_blank" rel="noopener"' +
-          (b.download ? ' download' : '') + '>'
-        : '<div class="irow ' + esc(b.kind || 'lk') + '">';
-      var tagClose = href ? '</a>' : '</div>';
-
-      return tagOpen + ic +
-        '<div class="bd"><div class="tt"><h3>' + esc(title) + '</h3>' +
-          (meta ? '<span class="v">' + esc(meta) + '</span>' : '') +
-        '</div>' +
-        (desc ? '<p class="d">' + esc(desc) + '</p>' : '') + '</div>' +
-        (pill ? '<span class="st ' + pill.cls + '">' + pill.text + '</span>' : '') +
-        (act ? '<span class="go">' + esc(act) + '</span>' : '') +
-        tagClose;
-    }
-
-    case 'urls':
-      if (!it._urls.length) return '';
-      return '<ul class="urls">' + it._urls.map(function(u){
-        var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
-                : u.status === 'checking' ? 'ing'
-                : u.status === 'bad' ? 'bad' : 'wt';
-        var lat = u.status === 'ok' ? (u.lat + ' ms')
-                : u.status === 'bad' ? '离线' : '检测中';
-        return '<li data-uid="' + esc(u.uid) + '">' +
-          '<span class="dot ' + cls + '"></span>' +
-          '<a class="u" href="' + esc(u.url) + '" target="_blank" rel="noopener" title="' +
-            esc(u.url) + '">' + esc(showUrl(u.url)) + '</a>' +
-          '<span class="lat' + (cls ? ' ' + cls : '') + '">' + lat + '</span>' +
-          '<button class="cp" data-url="' + esc(u.url) + '">复制</button>' +
-        '</li>';
-      }).join('') + '</ul>';
-
-    default:
-      return '';   // 未知块类型静默跳过，改 JSON 不会白屏
-  }
-}
-
-function typeOf(it){
-  var types = DATA.render.types || {};
-  return types[it._type] || types[DATA.render.default] ||
-         { blocks: [{ as: 'header' }, { as: 'text', field: 'desc' }, { as: 'urls' }] };
-}
-
-function cardHtml(it){
-  var tpl = typeOf(it);
-  var blocks = tpl.blocks || [];
-  var out = '', inline = '';
-
-  blocks.forEach(function(b){
-    var h = blockHtml(it, b);
-    if (!h) return;
-    if (b.inline){ inline += h; return; }
-    if (inline){ out += '<div class="meta-row">' + inline + '</div>'; inline = ''; }
-    out += h;
-  });
-  if (inline) out += '<div class="meta-row">' + inline + '</div>';
-
-  return '<article class="card' + (tpl.class ? ' ' + esc(tpl.class) : '') + '">' + out + '</article>';
-}
-
-/* ================= 排序 / 过滤 ================= */
-function rank(it){
-  if (it._status === 'ok') return 0;    // 在线
-  if (it._status === 'bad') return 2;   // 离线
-  return 1;                             // 检测中
-}
-
-function matched(it){
-  if (state.group !== 'all' && it._group !== state.group) return false;
-  if (state.status === 'online' && it._status !== 'ok') return false;
-  if (state.status === 'offline' && it._status !== 'bad') return false;
-  if (!state.keyword) return true;
-  return it._hay.indexOf(state.keyword) !== -1;
-}
-
-function render(){
-  var rows = DATA.items.filter(matched).sort(function(a, b){
-    var d = rank(a) - rank(b);
-    if (d) return d;
-    if (a._weight !== b._weight) return a._weight - b._weight;   // 有权重：升序
-    return a._rand - b._rand;                                    // 无权重：随机混排
-  });
-
-  // 首条只是排在第一，不做任何视觉区分
-  if (state.pinIdx >= 0){
-    var pin = DATA.items[state.pinIdx];
-    var pos = rows.indexOf(pin);
-    if (pos > 0){ rows.splice(pos, 1); rows.unshift(pin); }
+    var idx = Math.floor(hash(pool.map(function (x) { return x._i; }).join('|'), state.seed) * pool.length);
+    state.pinIdx = pool[Math.min(idx, pool.length - 1)]._i;
   }
 
-  var html = rows.map(cardHtml).join('');
-  if (!html){
-    html = '<div class="empty"><span class="big">∅</span>没有匹配的接口<br>' +
-           '<span style="font-size:12px;opacity:.7">换个分组或清空搜索，也可以点「重新检测」</span></div>';
+  function renderHead() {
+    el('title').textContent = DATA.site.title || '好多接口';
+    el('foot').textContent = DATA.site.footer || '';
   }
-  listEl.innerHTML = html;
-  updateCounts();
-}
 
-function updateCounts(){
-  var all = 0, on = 0, off = 0;
-  DATA.items.forEach(function(it){
-    all += it._urls.length;
-    if (it._status === 'ok') on++;
-    else if (it._status === 'bad') off++;
-  });
-  el('nAll').textContent = all;
-  el('btnAll').title = '显示全部：' + all + ' 条链接 / ' + DATA.items.length + ' 个条目';
-  el('nOnline').textContent = on;
-  el('nOffline').textContent = off;
+  function renderGroups() {
+    var counts = {};
+    DATA.items.forEach(function (i) { counts[i._group] = (counts[i._group] || 0) + 1; });
 
-  el('btnAll').classList.toggle('on', state.status === 'all');
-  el('btnAll').classList.toggle('allb', state.status === 'all');
-  el('btnOnline').classList.toggle('on', state.status === 'online');
-  el('btnOnline').classList.toggle('okb', state.status === 'online');
-  el('btnOffline').classList.toggle('on', state.status === 'offline');
-  el('btnOffline').classList.toggle('offb', state.status === 'offline');
-}
+    var html = '<button class="chip' + (state.group === 'all' ? ' active' : '') +
+               '" data-g="all">全部</button>';
+    DATA.groups.forEach(function (g) {
+      var n = counts[g.id] || 0;
+      if (!n) return;
+      html += '<button class="chip' + (g.res ? ' res' : '') + (state.group === g.id ? ' active' : '') +
+              '" data-g="' + esc(g.id) + '">' + esc(g.name) + ' <span class="c">' + n + '</span></button>';
+    });
+    groupsEl.innerHTML = html;
+  }
 
-/* ================= 局部更新 ================= */
-function patchUrl(uid){
-  var p = uid.split('#');
-  var it = DATA.items[+p[0]], u = it && it._urls[+p[1]];
-  if (!u) return;
+  function itemStatus(it) {
+    var best = null, checking = false, allDown = it._urls.length > 0;
+    it._urls.forEach(function (u) {
+      if (u.status === 'ok' && (best === null || u.lat < best)) best = u.lat;
+      if (u.status === 'checking' || u.status === 'wait') checking = true;
+      if (u.status !== 'bad') allDown = false;
+    });
+    if (best !== null) { it._status = 'ok'; it._lat = best; return; }
+    if (checking) { it._status = 'wait'; it._lat = null; return; }
+    if (allDown) { it._status = 'bad'; it._lat = null; return; }
+    it._status = 'wait';
+    it._lat = null;
+  }
 
-  var li = listEl.querySelector('li[data-uid="' + uid + '"]');
-  if (li){
-    var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
-            : u.status === 'checking' ? 'ing'
-            : u.status === 'bad' ? 'bad' : 'wt';
-    li.querySelector('.dot').className = 'dot ' + cls;
-    var lat = li.querySelector('.lat');
-    lat.className = 'lat' + (cls ? ' ' + cls : '');
-    lat.textContent = u.status === 'ok' ? (u.lat + ' ms')
-                    : u.status === 'bad' ? '离线' : '检测中';
+  function statusMeta(it) {
+    if (it._status === 'ok') return { cls: it._lat >= SLOW_MS ? 'mid' : 'ok', text: it._lat + ' ms' };
+    if (it._status === 'bad') return { cls: 'bad', text: '离线' };
+    return { cls: 'wait', text: '检测中' };
+  }
 
-    var card = li.closest('.card');
-    if (card){
-      itemStatus(it);
-      var sm = statusMeta(it);
-      var st = card.querySelector('.st');
-      if (st){ st.className = 'st ' + sm.cls; st.textContent = sm.text; }
+  function blockHtml(it, b) {
+    var v = b.field ? it[b.field] : null;
+
+    switch (b.as) {
+      case 'header':
+        var logo = b.logo && it.logo ? '<img class="logo" src="' + esc(it.logo) + '" alt="" loading="lazy">' : '';
+        var name = it[b.field || 'name'] || '';
+        var pill = (b.status !== false && it._urls.length) ? statusMeta(it) : null;
+        return '<div class="ctop">' + logo + '<h3>' + esc(name) + '</h3>' +
+          (pill ? '<span class="spacer"></span><span class="st ' + pill.cls + '">' + pill.text + '</span>' : '') +
+        '</div>';
+
+      case 'text':
+        return v ? '<p class="desc">' + esc(v) + '</p>' : '';
+
+      case 'group':
+        return '<span class="gtag' + (it._res ? ' res' : '') + '">' + esc(it._groupName) + '</span>';
+
+      case 'tags':
+        return (Array.isArray(v) ? v : []).filter(Boolean).map(function (t) {
+          return '<span class="tag">' + esc(t) + '</span>';
+        }).join('');
+
+      case 'sources':
+        return asList(v).map(function (s) {
+          return s.url
+            ? '<a class="src" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name || s.url) + '</a>'
+            : '<span class="tag">' + esc(s.name) + '</span>';
+        }).join('');
+
+      case 'links':
+        return asList(v).map(function (s) {
+          return '<a class="lnk" href="' + esc(s.url || '#') + '" target="_blank" rel="noopener">' + esc(s.name || s.url) + '</a>';
+        }).join('');
+
+      case 'image':
+        return v ? '<img class="' + esc(b.class || 'cover') + '" src="' + esc(v) + '" alt="" loading="lazy">' : '';
+
+      case 'row': {
+        var title = it[b.title || 'name'] || '';
+        var icon = b.icon ? it[b.icon] : '';
+        var meta = b.meta ? it[b.meta] : '';
+        var desc = b.desc ? it[b.desc] : '';
+        var href = b.url ? it[b.url] : (it._urls[0] ? it._urls[0].url : '');
+        var act = b.action || '';
+        var rpill = (b.status !== false && it._urls.length) ? statusMeta(it) : null;
+        if (!title) return '';
+
+        var ic = '<span class="ic"><i>' + esc(String(title).charAt(0)) + '</i>' +
+                 (icon ? '<img src="' + esc(icon) + '" alt="">' : '') + '</span>';
+        var tagOpen = href
+          ? '<a class="irow ' + esc(b.kind || 'lk') + '" href="' + esc(href) + '" target="_blank" rel="noopener"' +
+            (b.download ? ' download' : '') + '>'
+          : '<div class="irow ' + esc(b.kind || 'lk') + '">';
+        var tagClose = href ? '</a>' : '</div>';
+
+        return tagOpen + ic +
+          '<div class="bd"><div class="tt"><h3>' + esc(title) + '</h3>' +
+            (meta ? '<span class="v">' + esc(meta) + '</span>' : '') +
+          '</div>' +
+          (desc ? '<p class="d">' + esc(desc) + '</p>' : '') + '</div>' +
+          (rpill ? '<span class="st ' + rpill.cls + '">' + rpill.text + '</span>' : '') +
+          (act ? '<span class="go">' + esc(act) + '</span>' : '') +
+          tagClose;
+      }
+
+      case 'urls':
+        if (!it._urls.length) return '';
+        return '<ul class="urls">' + it._urls.map(function (u) {
+          var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
+                  : u.status === 'checking' ? 'ing'
+                  : u.status === 'bad' ? 'bad' : 'wt';
+          var lat = u.status === 'ok' ? (u.lat + ' ms')
+                  : u.status === 'bad' ? '离线' : '检测中';
+          return '<li data-uid="' + esc(u.uid) + '">' +
+            '<span class="dot ' + cls + '"></span>' +
+            '<a class="u" href="' + esc(u.url) + '" target="_blank" rel="noopener" title="' +
+              esc(u.url) + '">' + esc(showUrl(u.url)) + '</a>' +
+            '<span class="lat' + (cls ? ' ' + cls : '') + '">' + lat + '</span>' +
+            '<button class="cp" data-url="' + esc(u.url) + '">复制</button>' +
+          '</li>';
+        }).join('') + '</ul>';
+
+      default:
+        return '';
     }
   }
-  itemStatus(it);
-  updateCounts();
-}
 
-/* ================= 检测 =================
-   判定口径：服务器有响应即有效，不校验返回内容（403/404/图片/错误页都算在线）。
-   拿到响应立刻 abort，不下载正文，延时即首字节时间。
-   https 页面请求 http 地址会被浏览器直接拦截（混合内容，约 1ms 失败），
-   这类目标自动改试 https 等价地址，仍失败才算离线。
-   ========================================= */
-var PROXY_TIMEOUT = 6000;
-// 可选：自己的探测端点，{url} 会被替换为已编码的目标地址；留空表示不用代理。
-var PROXIES = [];
+  function typeOf(it) {
+    var types = DATA.render.types || {};
+    return types[it._type] || types[DATA.render.default] ||
+           { blocks: [{ as: 'header' }, { as: 'text', field: 'desc' }, { as: 'urls' }] };
+  }
 
-function noCache(url){
-  return url + (url.indexOf('?') === -1 ? '?' : '&') + '_t=' + Date.now();
-}
+  function cardHtml(it) {
+    var tpl = typeOf(it);
+    var blocks = tpl.blocks || [];
+    var out = '', inline = '';
 
-function timedFetch(target, ms, mode){
-  var ctrl = new AbortController();
-  var t0 = performance.now();
-  var timer = setTimeout(function(){ ctrl.abort(); }, ms);
-  return fetch(target, {
-    method: 'GET', mode: mode || 'no-cors', cache: 'no-store', redirect: 'follow',
-    credentials: 'omit', referrerPolicy: 'no-referrer', signal: ctrl.signal
-  }).then(function(resp){
-    clearTimeout(timer);
-    var lat = Math.round(performance.now() - t0);
-    var status = (mode === 'cors') ? resp.status : 0;
-    try { ctrl.abort(); } catch(e){}
-    return { ok: true, lat: lat, status: status };
-  }).catch(function(){
-    clearTimeout(timer);
-    return { ok: false };
-  });
-}
-
-function probe(url){
-  var mixed = location.protocol === 'https:' && /^http:\/\//i.test(url);
-
-  // 1) 直连：http / file 页面直接可用；https 页面下 http 目标会被浏览器拦掉
-  return timedFetch(noCache(url), TIMEOUT_MS).then(function(r){
-    if (r.ok || !mixed) return r;
-
-    // 2) https 等价地址（不少站点同时开了 443）
-    var alt = 'https://' + url.slice(7);
-    return timedFetch(noCache(alt), 6000).then(function(r2){
-      if (r2.ok) return r2;
-      return viaProxy(url, 0);   // 3) 自建探测端点（默认空）
+    blocks.forEach(function (b) {
+      var h = blockHtml(it, b);
+      if (!h) return;
+      if (b.inline) { inline += h; return; }
+      if (inline) { out += '<div class="meta-row">' + inline + '</div>'; inline = ''; }
+      out += h;
     });
-  });
-}
+    if (inline) out += '<div class="meta-row">' + inline + '</div>';
 
-function viaProxy(url, i){
-  if (i >= PROXIES.length) return Promise.resolve({ ok: false });
-  var target = PROXIES[i].replace('{url}', encodeURIComponent(url));
-  return timedFetch(target, PROXY_TIMEOUT, 'cors').then(function(r){
-    // 代理自身的鉴权 / 限流不算目标可达
-    if (r.ok && r.status !== 401 && r.status !== 403 && r.status !== 407 && r.status !== 429) return r;
-    return viaProxy(url, i + 1);
-  });
-}
+    return '<article class="card' + (tpl.class ? ' ' + esc(tpl.class) : '') + '">' + out + '</article>';
+  }
 
-function setProgress(text, spinning){
-  el('progress').innerHTML = (spinning ? '<span class="pulse"></span>' : '') + '<span>' + esc(text) + '</span>';
-}
+  function rank(it) {
+    if (it._status === 'ok') return 0;
+    if (it._status === 'bad') return 2;
+    return 1;
+  }
 
-function startCheck(){
-  if (state.detecting) return;
-  state.detecting = true; state.abort = false; state.done = 0;
+  function matched(it) {
+    if (state.group !== 'all' && it._group !== state.group) return false;
+    if (state.status === 'online' && it._status !== 'ok') return false;
+    if (state.status === 'offline' && it._status !== 'bad') return false;
+    if (!state.keyword) return true;
+    return it._hay.indexOf(state.keyword) !== -1;
+  }
 
-  var queue = [];
-  DATA.items.forEach(function(it){
-    it._urls.forEach(function(u){ u.status = 'wait'; u.lat = null; queue.push({ it: it, u: u }); });
-    it._status = 'wait'; it._lat = null;
-  });
-  render();
+  function render() {
+    var rows = DATA.items.filter(matched).sort(function (a, b) {
+      var d = rank(a) - rank(b);
+      if (d) return d;
+      if (a._weight !== b._weight) return a._weight - b._weight;
+      return a._rand - b._rand;
+    });
 
-  state.total = queue.length;
-  var btn = el('btnRecheck');
-  btn.disabled = true;
-  btn.textContent = '检测中…';
-  setProgress('检测中 0/' + queue.length, true);
+    if (state.pinIdx >= 0) {
+      var pin = DATA.items[state.pinIdx];
+      var pos = rows.indexOf(pin);
+      if (pos > 0) { rows.splice(pos, 1); rows.unshift(pin); }
+    }
 
-  var idx = 0;
-  function worker(){
-    if (state.abort || idx >= queue.length) return Promise.resolve();
-    var job = queue[idx++];
-    job.u.status = 'checking';
-    patchUrl(job.u.uid);
-    return probe(job.u.url).then(function(r){
-      if (state.abort) return;
-      job.u.status = r.ok ? 'ok' : 'bad';
-      job.u.lat = r.ok ? r.lat : null;
-      state.done++;
+    var html = rows.map(cardHtml).join('');
+    if (!html) {
+      html = '<div class="empty"><span class="big">∅</span>没有匹配的接口<br>' +
+             '<span style="font-size:12px;opacity:.7">换个分组或清空搜索，也可以点「重新检测」</span></div>';
+    }
+    listEl.innerHTML = html;
+    updateCounts();
+  }
+
+  function updateCounts() {
+    var all = 0, on = 0, off = 0;
+    DATA.items.forEach(function (it) {
+      all += it._urls.length;
+      if (it._status === 'ok') on++;
+      else if (it._status === 'bad') off++;
+    });
+    el('nAll').textContent = all;
+    el('btnAll').title = '显示全部：' + all + ' 条链接 / ' + DATA.items.length + ' 个条目';
+    el('nOnline').textContent = on;
+    el('nOffline').textContent = off;
+
+    el('btnAll').classList.toggle('on', state.status === 'all');
+    el('btnAll').classList.toggle('allb', state.status === 'all');
+    el('btnOnline').classList.toggle('on', state.status === 'online');
+    el('btnOnline').classList.toggle('okb', state.status === 'online');
+    el('btnOffline').classList.toggle('on', state.status === 'offline');
+    el('btnOffline').classList.toggle('offb', state.status === 'offline');
+  }
+
+  function patchUrl(uid) {
+    var p = uid.split('#');
+    var it = DATA.items[+p[0]], u = it && it._urls[+p[1]];
+    if (!u) return;
+
+    var li = listEl.querySelector('li[data-uid="' + uid + '"]');
+    if (li) {
+      var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
+              : u.status === 'checking' ? 'ing'
+              : u.status === 'bad' ? 'bad' : 'wt';
+      li.querySelector('.dot').className = 'dot ' + cls;
+      var lat = li.querySelector('.lat');
+      lat.className = 'lat' + (cls ? ' ' + cls : '');
+      lat.textContent = u.status === 'ok' ? (u.lat + ' ms')
+                      : u.status === 'bad' ? '离线' : '检测中';
+
+      var card = li.closest('.card');
+      if (card) {
+        itemStatus(it);
+        var sm = statusMeta(it);
+        var st = card.querySelector('.st');
+        if (st) { st.className = 'st ' + sm.cls; st.textContent = sm.text; }
+      }
+    }
+    itemStatus(it);
+    updateCounts();
+  }
+
+  var PROXY_TIMEOUT = 6000;
+  var PROXIES = [];
+
+  function noCache(url) {
+    return url + (url.indexOf('?') === -1 ? '?' : '&') + '_t=' + Date.now();
+  }
+
+  function timedFetch(target, ms, mode) {
+    var ctrl = new AbortController();
+    var t0 = performance.now();
+    var timer = setTimeout(function () { ctrl.abort(); }, ms);
+    return fetch(target, {
+      method: 'GET',
+      mode: mode || 'no-cors',
+      cache: 'no-store',
+      redirect: 'follow',
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer',
+      signal: ctrl.signal
+    }).then(function (resp) {
+      clearTimeout(timer);
+      var lat = Math.round(performance.now() - t0);
+      var status = (mode === 'cors') ? resp.status : 0;
+      try { ctrl.abort(); } catch (e) {}
+      return { ok: true, lat: lat, status: status };
+    }).catch(function () {
+      clearTimeout(timer);
+      return { ok: false };
+    });
+  }
+
+  function probe(url) {
+    var mixed = location.protocol === 'https:' && /^http:\/\//i.test(url);
+
+    return timedFetch(noCache(url), TIMEOUT_MS).then(function (r) {
+      if (r.ok || !mixed) return r;
+
+      var alt = 'https://' + url.slice(7);
+      return timedFetch(noCache(alt), 6000).then(function (r2) {
+        if (r2.ok) return r2;
+        return viaProxy(url, 0);
+      });
+    });
+  }
+
+  function viaProxy(url, i) {
+    if (i >= PROXIES.length) return Promise.resolve({ ok: false });
+    var target = PROXIES[i].replace('{url}', encodeURIComponent(url));
+    return timedFetch(target, PROXY_TIMEOUT, 'cors').then(function (r) {
+      if (r.ok && r.status !== 401 && r.status !== 403 && r.status !== 407 && r.status !== 429) return r;
+      return viaProxy(url, i + 1);
+    });
+  }
+
+  function setProgress(text, spinning) {
+    el('progress').innerHTML = (spinning ? '<span class="pulse"></span>' : '') + '<span>' + esc(text) + '</span>';
+  }
+
+  function startCheck() {
+    if (state.detecting) return;
+    state.detecting = true;
+    state.abort = false;
+    state.done = 0;
+
+    var queue = [];
+    DATA.items.forEach(function (it) {
+      it._urls.forEach(function (u) { u.status = 'wait'; u.lat = null; queue.push({ it: it, u: u }); });
+      it._status = 'wait';
+      it._lat = null;
+    });
+    render();
+
+    state.total = queue.length;
+    var btn = el('btnRecheck');
+    btn.disabled = true;
+    btn.textContent = '检测中…';
+    setProgress('检测中 0/' + queue.length, true);
+
+    var idx = 0;
+    function worker() {
+      if (state.abort || idx >= queue.length) return Promise.resolve();
+      var job = queue[idx++];
+      job.u.status = 'checking';
       patchUrl(job.u.uid);
-      setProgress('检测中 ' + state.done + '/' + state.total, true);
-      return worker();
+      return probe(job.u.url).then(function (r) {
+        if (state.abort) return;
+        job.u.status = r.ok ? 'ok' : 'bad';
+        job.u.lat = r.ok ? r.lat : null;
+        state.done++;
+        patchUrl(job.u.uid);
+        setProgress('检测中 ' + state.done + '/' + state.total, true);
+        return worker();
+      });
+    }
+
+    var workers = [];
+    for (var i = 0; i < Math.min(CONCURRENCY, queue.length); i++) workers.push(worker());
+
+    Promise.all(workers).then(function () {
+      state.detecting = false;
+      btn.disabled = false;
+      btn.textContent = '⟳ 重新检测';
+      setProgress('检测完成', false);
+      setTimeout(function () { if (!state.detecting) setProgress('', false); }, 2600);
+      render();
     });
   }
 
-  var workers = [];
-  for (var i = 0; i < Math.min(CONCURRENCY, queue.length); i++) workers.push(worker());
-
-  Promise.all(workers).then(function(){
-    state.detecting = false;
-    btn.disabled = false;
-    btn.textContent = '⟳ 重新检测';
-    setProgress('检测完成', false);
-    setTimeout(function(){ if (!state.detecting) setProgress('', false); }, 2600);
-    render();   // 在线 → 权重 → 随机
+  el('q').addEventListener('input', function (e) {
+    state.keyword = e.target.value.trim().toLowerCase();
+    el('qClear').style.display = state.keyword ? 'block' : 'none';
+    render();
   });
-}
 
-/* ================= 事件 ================= */
-el('q').addEventListener('input', function(e){
-  state.keyword = e.target.value.trim().toLowerCase();
-  el('qClear').style.display = state.keyword ? 'block' : 'none';
-  render();
-});
-
-el('qClear').addEventListener('click', function(){
-  el('q').value = ''; state.keyword = '';
-  el('qClear').style.display = 'none';
-  el('q').focus();
-  render();
-});
-
-groupsEl.addEventListener('click', function(e){
-  var b = e.target.closest('.chip');
-  if (!b) return;
-  state.group = b.getAttribute('data-g');
-  // 切换分组时清空搜索
-  if (state.keyword){
-    state.keyword = '';
+  el('qClear').addEventListener('click', function () {
     el('q').value = '';
+    state.keyword = '';
     el('qClear').style.display = 'none';
+    el('q').focus();
+    render();
+  });
+
+  groupsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    state.group = b.getAttribute('data-g');
+    if (state.keyword) {
+      state.keyword = '';
+      el('q').value = '';
+      el('qClear').style.display = 'none';
+    }
+    renderGroups();
+    render();
+  });
+
+  el('btnAll').addEventListener('click', function () {
+    state.status = 'all';
+    render();
+  });
+
+  el('btnOnline').addEventListener('click', function () {
+    state.status = state.status === 'online' ? 'all' : 'online';
+    render();
+  });
+
+  el('btnOffline').addEventListener('click', function () {
+    state.status = state.status === 'offline' ? 'all' : 'offline';
+    render();
+  });
+
+  el('btnRecheck').addEventListener('click', startCheck);
+
+  listEl.addEventListener('click', function (e) {
+    var cp = e.target.closest('.cp');
+    if (!cp) return;
+    e.preventDefault();
+    copyText(cp.getAttribute('data-url'));
+    var old = cp.textContent;
+    cp.textContent = '已复制';
+    cp.classList.add('ok');
+    setTimeout(function () { cp.textContent = old; cp.classList.remove('ok'); }, 1200);
+  });
+
+  function copyText(text) {
+    function done() {
+      toast('已复制：' + (text.length > 48 ? text.slice(0, 48) + '…' : text));
+    }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (err) {}
+      document.body.removeChild(ta);
+      done();
+    }
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done).catch(fallback);
+    else fallback();
   }
-  renderGroups(); render();
-});
 
-el('btnAll').addEventListener('click', function(){
-  state.status = 'all';
-  render();
-});
-
-el('btnOnline').addEventListener('click', function(){
-  state.status = state.status === 'online' ? 'all' : 'online';
-  render();
-});
-
-el('btnOffline').addEventListener('click', function(){
-  state.status = state.status === 'offline' ? 'all' : 'offline';
-  render();
-});
-
-el('btnRecheck').addEventListener('click', startCheck);
-
-listEl.addEventListener('click', function(e){
-  var cp = e.target.closest('.cp');
-  if (!cp) return;
-  e.preventDefault();
-  copyText(cp.getAttribute('data-url'));
-  var old = cp.textContent;
-  cp.textContent = '已复制'; cp.classList.add('ok');
-  setTimeout(function(){ cp.textContent = old; cp.classList.remove('ok'); }, 1200);
-});
-
-function copyText(text){
-  function done(){ toast('已复制：' + (text.length > 48 ? text.slice(0, 48) + '…' : text)); }
-  function fallback(){
-    var ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch(err){}
-    document.body.removeChild(ta); done();
+  function apply(raw) {
+    RAW = raw;
+    state.seed = newSeed();
+    DATA = normalize(raw);
+    renderHead();
+    renderGroups();
+    pickPin();
+    render();
   }
-  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done).catch(fallback);
-  else fallback();
-}
 
-/* ================= 启动 ================= */
-function apply(raw){
-  RAW = raw;
-  state.seed = newSeed();          // 每次加载都换一个随机种子
-  DATA = normalize(raw);
-  renderHead(); renderGroups(); pickPin(); render();
-}
-
-apply(JSON.parse(DEFAULT_JSON));
-setTimeout(startCheck, 350);   // 先出首屏，再开始检测
+  apply(JSON.parse(DEFAULT_JSON));
+  setTimeout(startCheck, 350);
 })();
 </script>
 </body>
