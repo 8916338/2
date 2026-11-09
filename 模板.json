@@ -41,8 +41,12 @@
     "randomRange": 10000
   },
   "items": [
-    { "type": "api", "name": "推荐目1", "desc": "", "group": "epg", "tags": [""], "source": [{ "name": "海量接口备份搬运站", "url": "https://0.wudaozhe.net" }], "urls": ["https://w.smtr8.cc/s/W9RILEB323HH"] },
-    { "type": "api", "name": "lx-music-source V3.0", "desc": "", "group": "music", "tags": [""], "source": [{ "name": "海量接口备份搬运站", "url": "https://0.wudaozhe.net" }], "urls": ["https://tvbox.moliys.icu/yinyuan/lx-music-source V3.0.js"] },
+
+
+
     { "type": "api", "name": "🎨漫画台🅰", "desc": "", "group": "comic", "tags": [""], "source": [{ "name": "海量接口备份搬运站", "url": "https://0.wudaozhe.net" }], "urls": ["https://m.manhuatai.com/api"] }
+
+
+
   ]
 }
