@@ -32,7 +32,6 @@ body{
 .head{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
 .head h1{margin:0;font-size:20px;letter-spacing:.2px;font-weight:700;text-align:center}
 
-/* toolbar 内包含进度、搜索、分组，一起悬浮 */
 .toolbar{
   position:sticky;top:0;z-index:20;
   background:var(--bg);
@@ -58,7 +57,6 @@ body{
 .search .clear{position:absolute;right:8px;top:7px;width:26px;height:26px;border:0;background:transparent;color:var(--dim2);cursor:pointer;border-radius:6px;font-size:16px;display:none}
 .search .clear:hover{color:var(--acc);background:var(--soft)}
 
-/* 分组栏：可拖动横向滚动 */
 .groups{
   display:flex;gap:7px;overflow-x:auto;
   padding:0 0 10px;
@@ -179,7 +177,6 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .foot{margin-top:22px;text-align:center;color:var(--dim2);font-size:11.5px;line-height:1.8}
 
-/* 小屏适配 */
 @media (max-width:640px){
   .wrap{padding:12px 10px 70px}
   .head{margin-bottom:8px}
@@ -236,8 +233,8 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
   'use strict';
 
   var DATA_URL = 'data.json';
-  var TIMEOUT_MS = 12000;
-  var URL_CONCURRENCY = 6;
+  var TIMEOUT_MS = 6000;          // 单 URL 超时：6 秒
+  var URL_CONCURRENCY = 128;      // 软上限，实际并发由浏览器控制
   var SLOW_MS = 1500;
   var NO_W = 1e9;
 
@@ -687,7 +684,7 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     oldCard.replaceWith(temp.firstChild);
   }
 
-  var PROXY_TIMEOUT = 6000;
+  var PROXY_TIMEOUT = 5000;
   var PROXIES = [];
 
   function noCache(url) {
@@ -718,16 +715,24 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     });
   }
 
+  // 单 URL 探测：最多一次请求 + 一次 https 兜底，避免多次超时叠加
   function probe(url) {
     var mixed = location.protocol === 'https:' && /^http:\/\//i.test(url);
 
-    return timedFetch(noCache(url), TIMEOUT_MS).then(function (r) {
-      if (r.ok || !mixed) return r;
+    if (mixed) {
+      // 混合内容：http 直连会被浏览器拦截，直接走 https 等价地址
       var alt = 'https://' + url.slice(7);
-      return timedFetch(noCache(alt), 6000).then(function (r2) {
-        if (r2.ok) return r2;
+      return timedFetch(noCache(alt), TIMEOUT_MS).then(function (r) {
+        if (r.ok) return r;
         return viaProxy(url, 0);
+      }).catch(function () {
+        return { ok: false };
       });
+    }
+
+    return timedFetch(noCache(url), TIMEOUT_MS).then(function (r) {
+      if (r.ok) return r;
+      return viaProxy(url, 0);
     }).catch(function () {
       return { ok: false };
     });
@@ -754,8 +759,9 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     }
   }
 
+  // 软上限很高，让所有待检测 URL 都立即进入 checking 状态
   function ensureWorkers() {
-    while (activeWorkers < URL_CONCURRENCY && pendingUrls.length) {
+    while (pendingUrls.length > 0 && activeWorkers < URL_CONCURRENCY) {
       activeWorkers++;
       worker();
     }
@@ -811,7 +817,7 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     ensureWorkers();
   }
 
-  /* ---------- 分组栏拖动滚动 ---------- */
+  /* ---------- 分组栏拖动 ---------- */
   function enableDragScroll(elm) {
     var dragging = false;
     var moved = false;
@@ -871,7 +877,6 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     }, true);
   }
 
-  /* ---------- 悬浮工具栏滚动阴影 ---------- */
   function setupToolbarShadow() {
     var tb = el('toolbar');
     if (!tb) return;
@@ -908,7 +913,6 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     }
     renderGroups();
     render();
-    // 选中项尽量滚到可见位置
     var chip = groupsEl.querySelector('.chip.active');
     if (chip && chip.scrollIntoView) {
       try {
