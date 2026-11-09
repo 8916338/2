@@ -1,0 +1,48 @@
+{
+  "version": 3,
+  "site": {
+    "title": "好多接口",
+    "footer": "数据来自网络公开资源，仅供学习与测试，请勿用于商业用途；接口可用性随时变化，请以实际检测为准。"
+  },
+  "groups": [
+    { "id": "single", "name": "单仓源", "isApi": true },
+    { "id": "multi", "name": "多仓源", "isApi": true },
+    { "id": "live", "name": "直播源", "isApi": true },
+    { "id": "cat", "name": "猫源", "isApi": true },
+    { "id": "music", "name": "音源", "isApi": true },
+    { "id": "book", "name": "书源", "isApi": true },
+    { "id": "comic", "name": "漫画源", "isApi": true },
+    { "id": "danmu", "name": "弹幕", "isApi": true },
+    { "id": "epg", "name": "epg", "isApi": true },
+    { "id": "shell", "name": "空壳", "isApi": false, "res": true },
+    { "id": "fast", "name": "快链", "isApi": false },
+    { "id": "download", "name": "下载", "isApi": false },
+    { "id": "other", "name": "其他", "isApi": false, "res": true }
+  ],
+  "weights": {
+    "轮替占位": 1,
+    "神马都没有": 2,
+    "饭太硬": 4,
+    "肥猫": 5,
+    "摸鱼": 6,
+    "王二小": 7,
+    "集多": 8,
+    "潇洒": 9,
+    "小米": 10,
+    "嗷呜": 11,
+    "南风": 12,
+    "幸福年年": 13
+  },
+  "rotate": {
+    "keywords": [
+      "模糊搜索关键词"
+    ],
+    "seed": "time-random",
+    "randomRange": 10000
+  },
+  "items": [
+    { "type": "api", "name": "推荐目1", "desc": "", "group": "epg", "tags": [""], "source": [{ "name": "海量接口备份搬运站", "url": "https://0.wudaozhe.net" }], "urls": ["https://w.smtr8.cc/s/W9RILEB323HH"] },
+    { "type": "api", "name": "lx-music-source V3.0", "desc": "", "group": "music", "tags": [""], "source": [{ "name": "海量接口备份搬运站", "url": "https://0.wudaozhe.net" }], "urls": ["https://tvbox.moliys.icu/yinyuan/lx-music-source V3.0.js"] },
+    { "type": "api", "name": "🎨漫画台🅰", "desc": "", "group": "comic", "tags": [""], "source": [{ "name": "海量接口备份搬运站", "url": "https://0.wudaozhe.net" },{ "name": "第二个站", "url": "https://9.wudaozhe.net" }], "urls": ["https://m.manhuatai.com/api"] }
+  ]
+}
