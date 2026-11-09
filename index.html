@@ -15,9 +15,7 @@
                        下载、快链条目用单数 url + icon + 可选 version
     卡片模板内置在 JS 的 RENDER 里，JSON 只需给条目写 type：
                        api（默认）/ download / link / media
-  改数据两种方式：
-    1) 直接改 DATA 里的 JSON
-    2) 点右上角「{ } 数据」→ 粘贴 / 导入 tvbox-data.json → 应用
+  改数据：直接改下面 DATA 里的 JSON。
   ============================================================
 -->
 <style>
@@ -47,17 +45,8 @@ body{
 .wrap{max-width:1040px;margin:0 auto;padding:20px 16px 90px}
 
 /* ---------- 顶部 ---------- */
-.head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .head h1{margin:0;font-size:20px;letter-spacing:.2px;font-weight:700}
-.head .spacer{flex:1}
-.meta{font-size:12.5px;color:var(--dim);margin-bottom:6px}
-.meta b{color:var(--fg);font-weight:600}
-.icon-btn{
-  flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px;
-  border:1px solid var(--line);background:var(--card);color:var(--dim);
-  border-radius:9px;font-size:12.5px;cursor:pointer;transition:.15s;box-shadow:var(--shadow);font-family:inherit;
-}
-.icon-btn:hover{color:var(--acc);border-color:var(--acc)}
 
 /* ---------- 工具栏 ---------- */
 .toolbar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0 0}
@@ -72,6 +61,8 @@ body{
 .btn.primary:hover{filter:brightness(.94);color:#fff}
 .btn[disabled]{opacity:.55;cursor:not-allowed}
 .btn .n{font-variant-numeric:tabular-nums;opacity:.7;font-size:11.5px}
+.btn.on.allb{background:var(--fg);border-color:var(--fg);color:var(--card);font-weight:600}
+.btn.on.allb .n{opacity:.75}
 .btn.on.okb{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
 .btn.on.offb{background:var(--off-soft);border-color:var(--off);color:var(--fg);font-weight:600}
 .progress{margin-left:auto;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
@@ -181,7 +172,7 @@ body{
 .dot.ing{background:var(--acc);animation:pulse 1.2s infinite}
 .urls .u{flex:1;min-width:0;color:var(--fg);text-decoration:none;opacity:.9;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
 .urls .u:hover{color:var(--acc);opacity:1}
-.urls .lat{flex:none;font-size:11.5px;color:var(--dim2);font-variant-numeric:tabular-nums;min-width:46px;text-align:right}
+.urls .lat{flex:none;font-size:11.5px;color:var(--dim2);font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
 .urls .lat.ok{color:var(--ok);font-weight:600}
 .urls .lat.mid{color:var(--warn);font-weight:600}
 .urls .lat.wt{color:var(--dim2)}
@@ -192,29 +183,7 @@ body{
 .empty{text-align:center;color:var(--dim);padding:56px 20px;font-size:13.5px}
 .empty .big{font-size:26px;display:block;margin-bottom:8px;opacity:.5}
 
-/* ---------- 数据抽屉 ---------- */
-.mask{position:fixed;inset:0;background:rgba(12,16,24,.45);z-index:60;display:none}
-.mask.show{display:block}
-.drawer{
-  position:fixed;z-index:61;top:0;right:0;height:100%;width:min(580px,94vw);
-  background:var(--card);border-left:1px solid var(--line);
-  transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column;
-}
-.drawer.show{transform:none}
-.drawer header{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
-.drawer header h4{margin:0;font-size:14px}
-.drawer header .spacer{flex:1}
-.drawer .body{padding:12px 16px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:10px}
-.drawer textarea{
-  flex:1;min-height:320px;width:100%;resize:vertical;border:1px solid var(--line);border-radius:10px;
-  background:var(--soft);color:var(--fg);padding:10px 12px;font:11.8px/1.55 ui-monospace,Menlo,monospace;outline:none;
-}
-.drawer textarea:focus{border-color:var(--acc)}
-.drawer .hint{font-size:11.5px;color:var(--dim2);line-height:1.75}
-.drawer .hint code{background:var(--soft);border-radius:4px;padding:0 4px;font-size:11px}
-.drawer footer{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
-.mini{border:1px solid var(--line);background:transparent;color:var(--dim);font-size:11.5px;border-radius:7px;padding:4px 9px;cursor:pointer;white-space:nowrap;font-family:inherit}
-.mini:hover{color:var(--acc);border-color:var(--acc)}
+/* ---------- 提示 ---------- */
 .toast{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);z-index:80;
   background:var(--fg);color:var(--bg);font-size:12.5px;padding:8px 14px;border-radius:8px;
@@ -229,7 +198,7 @@ body{
   .progress{margin-left:0;width:100%}
   .card{padding:11px 12px}
   .urls .u{font-size:11.5px}
-  .urls .lat{min-width:40px;font-size:11px}
+  .urls .lat{min-width:46px;font-size:11px}
 }
 </style>
 </head>
@@ -238,16 +207,14 @@ body{
 
   <div class="head">
     <h1 id="title">TVBox 接口导航</h1>
-    <span class="spacer"></span>
-    <button class="icon-btn" id="btnData" title="查看 / 编辑数据 JSON">{ } 数据</button>
   </div>
-  <div class="meta" id="meta">加载中…</div>
 
   <div class="toolbar">
     <div class="row">
-      <button class="btn primary" id="btnRecheck" title="https 页面无法直连 http 接口，会把这类条目置为「待测」；用本地文件打开或部署到 http 站点即可完整检测">⟳ 重新检测</button>
-      <button class="btn" id="btnOnline">在线 <span class="n" id="nOnline">0</span></button>
-      <button class="btn" id="btnOffline">离线 <span class="n" id="nOffline">0</span></button>
+      <button class="btn primary" id="btnRecheck" title="重新检测全部地址">⟳ 重新检测</button>
+      <button class="btn on allb" id="btnAll" title="显示全部条目">全部 <span class="n" id="nAll">0</span></button>
+      <button class="btn" id="btnOnline" title="只看在线">在线 <span class="n" id="nOnline">0</span></button>
+      <button class="btn" id="btnOffline" title="只看离线">离线 <span class="n" id="nOffline">0</span></button>
       <div class="progress" id="progress"></div>
     </div>
 
@@ -264,33 +231,6 @@ body{
 
   <div class="foot" id="foot"></div>
 </div>
-
-<div class="mask" id="mask"></div>
-<aside class="drawer" id="drawer">
-  <header>
-    <h4>数据（JSON）</h4>
-    <span class="spacer"></span>
-    <button class="mini" id="btnExport">下载 data.json</button>
-    <button class="mini" id="btnCloseDrawer">关闭</button>
-  </header>
-  <div class="body">
-    <div class="hint">
-      条目字段：<code>name</code> · <code>desc</code> · <code>group</code> · <code>tags</code> ·
-      <code>source</code> <code>[{name,url}]</code> · <code>urls</code> <code>["…"]</code>；
-      <code>type</code> 决定用哪套卡片（缺省 <code>api</code>，另有 <code>download</code> / <code>link</code> / <code>media</code>）；
-      下载与快链条目用单数 <code>url</code> + <code>icon</code> + 可选 <code>version</code>，同样参与检测与排序。
-      增删条目只改这个 JSON，卡片样式已内置在页面里。
-    </div>
-    <textarea id="jsonBox" spellcheck="false"></textarea>
-    <div class="hint">也可以点「导入文件」，选中 <code>tvbox-data.json</code> 后点「应用」。</div>
-  </div>
-  <footer>
-    <button class="btn primary" id="btnApply">应用</button>
-    <button class="btn" id="btnImport">导入文件</button>
-    <button class="btn" id="btnReset">恢复默认</button>
-    <input type="file" id="fileInput" accept=".json,application/json" hidden>
-  </footer>
-</aside>
 
 <div class="toast" id="toast"></div>
 
@@ -996,23 +936,15 @@ function pickPin(){
 /* ================= 头部 / 分组 ================= */
 function renderHead(){
   el('title').textContent = DATA.site.title || 'TVBox 接口导航';
-  var api = 0, res = 0, url = 0;
-  DATA.items.forEach(function(i){
-    if (i._isApi) api++; else res++;
-    url += i._urls.length;
-  });
-  el('meta').innerHTML = '共 <b>' + api + '</b> 个接口' +
-    (res ? ' · <b>' + res + '</b> 个资源（下载 / 快链 / 空壳）' : '') +
-    ' · <b>' + url + '</b> 条链接';
   el('foot').textContent = DATA.site.footer || '';
 }
 
 function renderGroups(){
-  var counts = { all: DATA.items.length };
+  var counts = {};
   DATA.items.forEach(function(i){ counts[i._group] = (counts[i._group] || 0) + 1; });
 
   var html = '<button class="chip' + (state.group === 'all' ? ' active' : '') +
-             '" data-g="all">全部 <span class="c">' + counts.all + '</span></button>';
+             '" data-g="all">全部</button>';
   DATA.groups.forEach(function(g){
     var n = counts[g.id] || 0;
     if (!n) return;
@@ -1022,26 +954,26 @@ function renderGroups(){
   groupsEl.innerHTML = html;
 }
 
-/* ================= 状态 ================= */
+/* ================= 状态 =================
+   只有三种状态：延时（在线并给出毫秒数）、离线、正在检测。
+   ========================================= */
 function itemStatus(it){
-  var best = null, checking = false, unknown = false, allDown = it._urls.length > 0;
+  var best = null, checking = false, allDown = it._urls.length > 0;
   it._urls.forEach(function(u){
     if (u.status === 'ok' && (best === null || u.lat < best)) best = u.lat;
-    if (u.status === 'checking') checking = true;
-    if (u.status === 'unknown') unknown = true;
-    if (u.status !== 'bad' && u.status !== 'unknown') allDown = false;
+    if (u.status === 'checking' || u.status === 'wait') checking = true;
+    if (u.status !== 'bad') allDown = false;
   });
   if (best !== null){ it._status = 'ok'; it._lat = best; return; }
   if (checking){ it._status = 'wait'; it._lat = null; return; }
-  if (allDown){ it._status = unknown ? 'unknown' : 'bad'; it._lat = null; return; }
+  if (allDown){ it._status = 'bad'; it._lat = null; return; }
   it._status = 'wait'; it._lat = null;
 }
 
 function statusMeta(it){
   if (it._status === 'ok') return { cls: it._lat >= SLOW_MS ? 'mid' : 'ok', text: it._lat + ' ms' };
   if (it._status === 'bad') return { cls: 'bad', text: '离线' };
-  if (it._status === 'unknown') return { cls: 'wt', text: '待测' };
-  return { cls: 'wait', text: '待检测' };
+  return { cls: 'wait', text: '检测中' };
 }
 
 /* ================= 通用块渲染 ================= */
@@ -1116,16 +1048,13 @@ function blockHtml(it, b){
       return '<ul class="urls">' + it._urls.map(function(u){
         var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
                 : u.status === 'checking' ? 'ing'
-                : u.status === 'bad' ? 'bad'
-                : u.status === 'unknown' ? 'wt' : '';
+                : u.status === 'bad' ? 'bad' : 'wt';
         var lat = u.status === 'ok' ? (u.lat + ' ms')
-                : u.status === 'checking' ? '…'
-                : u.status === 'bad' ? '离线'
-                : u.status === 'unknown' ? '待测' : '—';
+                : u.status === 'bad' ? '离线' : '检测中';
         return '<li data-uid="' + esc(u.uid) + '">' +
           '<span class="dot ' + cls + '"></span>' +
           '<a class="u" href="' + esc(u.url) + '" target="_blank" rel="noopener" title="' +
-            esc(u.url) + (u.status === 'unknown' ? '\n\nhttps 页面无法直连 http 接口，用本地文件打开或部署到 http 站点即可完整检测' : '') + '">' + esc(showUrl(u.url)) + '</a>' +
+            esc(u.url) + '">' + esc(showUrl(u.url)) + '</a>' +
           '<span class="lat' + (cls ? ' ' + cls : '') + '">' + lat + '</span>' +
           '<button class="cp" data-url="' + esc(u.url) + '">复制</button>' +
         '</li>';
@@ -1161,15 +1090,15 @@ function cardHtml(it){
 
 /* ================= 排序 / 过滤 ================= */
 function rank(it){
-  if (it._status === 'ok') return 0;                               // 在线
-  if (it._status === 'bad' || it._status === 'unknown') return 2;   // 离线 / 待测
-  return 1;                                                        // 待检测
+  if (it._status === 'ok') return 0;    // 在线
+  if (it._status === 'bad') return 2;   // 离线
+  return 1;                             // 检测中
 }
 
 function matched(it){
   if (state.group !== 'all' && it._group !== state.group) return false;
   if (state.status === 'online' && it._status !== 'ok') return false;
-  if (state.status === 'offline' && !(it._status === 'bad' || it._status === 'unknown')) return false;
+  if (state.status === 'offline' && it._status !== 'bad') return false;
   if (!state.keyword) return true;
   return it._hay.indexOf(state.keyword) !== -1;
 }
@@ -1199,13 +1128,19 @@ function render(){
 }
 
 function updateCounts(){
-  var on = 0, off = 0;
+  var all = 0, on = 0, off = 0;
   DATA.items.forEach(function(it){
+    all += it._urls.length;
     if (it._status === 'ok') on++;
-    else if (it._status === 'bad' || it._status === 'unknown') off++;
+    else if (it._status === 'bad') off++;
   });
+  el('nAll').textContent = all;
+  el('btnAll').title = '显示全部：' + all + ' 条链接 / ' + DATA.items.length + ' 个条目';
   el('nOnline').textContent = on;
   el('nOffline').textContent = off;
+
+  el('btnAll').classList.toggle('on', state.status === 'all');
+  el('btnAll').classList.toggle('allb', state.status === 'all');
   el('btnOnline').classList.toggle('on', state.status === 'online');
   el('btnOnline').classList.toggle('okb', state.status === 'online');
   el('btnOffline').classList.toggle('on', state.status === 'offline');
@@ -1222,15 +1157,12 @@ function patchUrl(uid){
   if (li){
     var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
             : u.status === 'checking' ? 'ing'
-            : u.status === 'bad' ? 'bad'
-            : u.status === 'unknown' ? 'wt' : '';
+            : u.status === 'bad' ? 'bad' : 'wt';
     li.querySelector('.dot').className = 'dot ' + cls;
     var lat = li.querySelector('.lat');
     lat.className = 'lat' + (cls ? ' ' + cls : '');
     lat.textContent = u.status === 'ok' ? (u.lat + ' ms')
-                    : u.status === 'checking' ? '…'
-                    : u.status === 'bad' ? '离线'
-                    : u.status === 'unknown' ? '待测' : '—';
+                    : u.status === 'bad' ? '离线' : '检测中';
 
     var card = li.closest('.card');
     if (card){
@@ -1247,14 +1179,11 @@ function patchUrl(uid){
 /* ================= 检测 =================
    判定口径：服务器有响应即有效，不校验返回内容（403/404/图片/错误页都算在线）。
    拿到响应立刻 abort，不下载正文，延时即首字节时间。
-   浏览器限制：https 页面不能直连 http 资源（混合内容拦截）。
-   这时依次尝试 https 等价地址 → CORS 代理，全部失败标为「待测」，
-   由用户用本地文件打开（file://）即可完整检测。
+   https 页面请求 http 地址会被浏览器直接拦截（混合内容，约 1ms 失败），
+   这类目标自动改试 https 等价地址，仍失败才算离线。
    ========================================= */
 var PROXY_TIMEOUT = 6000;
-// 可选：自己的探测端点，{url} 会被替换为已编码的目标地址。
-// 公共免费代理不稳定，默认留空；填入后 https 页面下会多一层兜底。
-// 例：['https://your-server.com/check?url={url}']
+// 可选：自己的探测端点，{url} 会被替换为已编码的目标地址；留空表示不用代理。
 var PROXIES = [];
 
 function noCache(url){
@@ -1281,21 +1210,23 @@ function timedFetch(target, ms, mode){
 }
 
 function probe(url){
-  // 同协议（file:// / http 页面 / https 目标）直接请求
-  if (!(location.protocol === 'https:' && /^http:\/\//i.test(url))){
-    return timedFetch(noCache(url), TIMEOUT_MS);
-  }
+  var mixed = location.protocol === 'https:' && /^http:\/\//i.test(url);
 
-  // https 页面测 http 目标：先试 https 等价，再走代理
-  var alt = 'https://' + url.slice('http://'.length);
-  return timedFetch(noCache(alt), 5000).then(function(r){
-    if (r.ok) return r;
-    return viaProxy(url, 0);
+  // 1) 直连：http / file 页面直接可用；https 页面下 http 目标会被浏览器拦掉
+  return timedFetch(noCache(url), TIMEOUT_MS).then(function(r){
+    if (r.ok || !mixed) return r;
+
+    // 2) https 等价地址（不少站点同时开了 443）
+    var alt = 'https://' + url.slice(7);
+    return timedFetch(noCache(alt), 6000).then(function(r2){
+      if (r2.ok) return r2;
+      return viaProxy(url, 0);   // 3) 自建探测端点（默认空）
+    });
   });
 }
 
 function viaProxy(url, i){
-  if (i >= PROXIES.length) return Promise.resolve({ unknown: true });
+  if (i >= PROXIES.length) return Promise.resolve({ ok: false });
   var target = PROXIES[i].replace('{url}', encodeURIComponent(url));
   return timedFetch(target, PROXY_TIMEOUT, 'cors').then(function(r){
     // 代理自身的鉴权 / 限流不算目标可达
@@ -1333,7 +1264,7 @@ function startCheck(){
     patchUrl(job.u.uid);
     return probe(job.u.url).then(function(r){
       if (state.abort) return;
-      job.u.status = r.ok ? 'ok' : (r.unknown ? 'unknown' : 'bad');
+      job.u.status = r.ok ? 'ok' : 'bad';
       job.u.lat = r.ok ? r.lat : null;
       state.done++;
       patchUrl(job.u.uid);
@@ -1349,11 +1280,8 @@ function startCheck(){
     state.detecting = false;
     btn.disabled = false;
     btn.textContent = '⟳ 重新检测';
-    var on = DATA.items.filter(function(x){ return x._status === 'ok'; }).length;
-    var un = 0;
-    DATA.items.forEach(function(x){ x._urls.forEach(function(u){ if (u.status === 'unknown') un++; }); });
-    setProgress('检测完成 · 在线 ' + on + ' / ' + DATA.items.length +
-      (un ? ' · ' + un + ' 待测' : ''), false);
+    setProgress('检测完成', false);
+    setTimeout(function(){ if (!state.detecting) setProgress('', false); }, 2600);
     render();   // 在线 → 权重 → 随机
   });
 }
@@ -1383,6 +1311,11 @@ groupsEl.addEventListener('click', function(e){
     el('qClear').style.display = 'none';
   }
   renderGroups(); render();
+});
+
+el('btnAll').addEventListener('click', function(){
+  state.status = 'all';
+  render();
 });
 
 el('btnOnline').addEventListener('click', function(){
@@ -1420,67 +1353,14 @@ function copyText(text){
   else fallback();
 }
 
-/* ================= 数据抽屉 ================= */
-function openDrawer(){
-  el('jsonBox').value = JSON.stringify(RAW, null, 2);
-  el('mask').classList.add('show');
-  el('drawer').classList.add('show');
-}
-function closeDrawer(){
-  el('mask').classList.remove('show');
-  el('drawer').classList.remove('show');
-}
-el('btnData').addEventListener('click', openDrawer);
-el('btnCloseDrawer').addEventListener('click', closeDrawer);
-el('mask').addEventListener('click', closeDrawer);
-
+/* ================= 启动 ================= */
 function apply(raw){
   RAW = raw;
-  state.seed = newSeed();          // 每次加载 / 应用都换一个随机种子
+  state.seed = newSeed();          // 每次加载都换一个随机种子
   DATA = normalize(raw);
   renderHead(); renderGroups(); pickPin(); render();
 }
 
-el('btnApply').addEventListener('click', function(){
-  try {
-    var raw = JSON.parse(el('jsonBox').value);
-    if (!raw.items || !raw.groups) throw new Error('缺少 items / groups');
-    apply(raw);
-    closeDrawer();
-    toast('已应用 ' + DATA.items.length + ' 条，开始检测');
-    startCheck();
-  } catch(err){
-    toast('JSON 有误：' + err.message);
-  }
-});
-
-el('btnImport').addEventListener('click', function(){ el('fileInput').click(); });
-el('fileInput').addEventListener('change', function(e){
-  var f = e.target.files[0];
-  if (!f) return;
-  var fr = new FileReader();
-  fr.onload = function(){ el('jsonBox').value = fr.result; toast('已载入，点「应用」生效'); };
-  fr.readAsText(f, 'utf-8');
-  e.target.value = '';
-});
-
-el('btnExport').addEventListener('click', function(){
-  var blob = new Blob([JSON.stringify(RAW, null, 2)], { type: 'application/json' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'tvbox-data.json';
-  a.click();
-  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 3000);
-});
-
-el('btnReset').addEventListener('click', function(){
-  apply(JSON.parse(DEFAULT_JSON));
-  closeDrawer();
-  toast('已恢复页面内置数据');
-  startCheck();
-});
-
-/* ================= 启动 ================= */
 apply(JSON.parse(DEFAULT_JSON));
 setTimeout(startCheck, 350);   // 先出首屏，再开始检测
 })();
