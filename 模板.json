@@ -1,0 +1,81 @@
+{
+  "version": 3,
+  "site": {
+    "title": "TVBox 接口导航",
+    "footer": "这是四种渲染的写法示例：api / download / link / media —— 复制 items 里对应的一条，换成自己的内容即可。"
+  },
+  "groups": [
+    { "id": "single", "name": "单仓源", "isApi": true },
+    { "id": "multi", "name": "多仓源", "isApi": true },
+    { "id": "live", "name": "直播源", "isApi": true },
+    { "id": "cat", "name": "猫源", "isApi": true },
+    { "id": "music", "name": "音源", "isApi": true },
+    { "id": "book", "name": "书源", "isApi": true },
+    { "id": "comic", "name": "漫画源", "isApi": true },
+    { "id": "danmu", "name": "弹幕", "isApi": true },
+    { "id": "shell", "name": "空壳", "isApi": false, "res": true },
+    { "id": "fast", "name": "快链", "isApi": false },
+    { "id": "download", "name": "下载", "isApi": false },
+    { "id": "other", "name": "其他", "isApi": false, "res": true }
+  ],
+  "weights": {
+    "饭太硬": 4,
+    "归零box": 5
+  },
+  "rotate": {
+    "keywords": ["饭太硬", "归零box"],
+    "seed": "time-random",
+    "randomRange": 10000
+  },
+  "items": [
+    {
+      "type": "api",
+      "name": "饭太硬",
+      "desc": "混合线路，荐片等资源，长期稳定，镜像最多",
+      "group": "single",
+      "tags": ["混合", "荐片"],
+      "source": [
+        { "name": "推荐·海量接口备份", "url": "https://1.wudaozhe.net" }
+      ],
+      "urls": [
+        "http://www.饭太硬.net/tv",
+        "http://www.饭太硬.art/tv",
+        "http://fty.xxooo.cf/tv",
+        "http://fty.888484.xyz/tv",
+        "http://fty.333232.xyz/tv",
+        "http://www.饭太硬.cc/tv"
+      ]
+    },
+    {
+      "type": "download",
+      "name": "真心下载包",
+      "desc": "整包离线导入，解压后本地加载",
+      "group": "download",
+      "icon": "https://plum.now61.cn/f/WBto/%E7%9C%9F%E5%BF%83.jpg",
+      "version": "20260815",
+      "url": "https://plum.now61.cn/f/pgsd/%E7%9C%9F%E5%BF%83.zip"
+    },
+    {
+      "type": "link",
+      "name": "归零box",
+      "desc": "壳子新势力，内置线路可直接使用",
+      "group": "fast",
+      "icon": "https://picsum.photos/seed/gui0box/200/200",
+      "version": "latest",
+      "url": "https://tvbox.moliys.icu/apk"
+    },
+    {
+      "type": "media",
+      "name": "影视仓 4K 合集",
+      "desc": "官方整理的 4K 影视与直播合集，适配影视仓、OK 影视，装好即用。",
+      "group": "other",
+      "logo": "https://picsum.photos/seed/tvboxlogo/96/96",
+      "cover": "https://picsum.photos/seed/tvboxcover/640/360",
+      "tags": ["4K", "影视仓", "合集"],
+      "links": [
+        { "name": "配置地址", "url": "https://tvbox.shenzjd.com" },
+        { "name": "使用说明", "url": "https://github.com/qist/tvbox" }
+      ]
+    }
+  ]
+}
