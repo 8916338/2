@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>好多好多接口</title>
+<title>好多接口</title>
 <style>
 :root{
   --bg:#f4f5f7; --card:#ffffff; --fg:#171a1f; --dim:#6b7280; --dim2:#9aa3b2;
@@ -32,19 +32,8 @@ body{
 .head{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
 .head h1{margin:0;font-size:20px;letter-spacing:.2px;font-weight:700;text-align:center}
 .toolbar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0 0}
-.toolbar .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.btn{
-  display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:8px;
-  border:1px solid var(--line);background:var(--card);color:var(--fg);font-size:12.5px;
-  cursor:pointer;transition:.15s;white-space:nowrap;font-family:inherit;
-}
-.btn:hover{border-color:var(--acc);color:var(--acc)}
-.btn .n{font-variant-numeric:tabular-nums;opacity:.7;font-size:11.5px}
-.btn.on.allb{background:var(--fg);border-color:var(--fg);color:var(--card);font-weight:600}
-.btn.on.allb .n{opacity:.75}
-.btn.on.okb{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
-.btn.on.offb{background:var(--off-soft);border-color:var(--off);color:var(--fg);font-weight:600}
-.progress{margin-left:auto;font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
+.toolbar .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.progress{font-size:12px;color:var(--dim);font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px;min-height:18px}
 .pulse{width:7px;height:7px;border-radius:50%;background:var(--acc);animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
 .search{position:relative;margin:6px 0 8px}
@@ -167,7 +156,6 @@ body{
 @media (max-width:640px){
   .wrap{padding:14px 12px 80px}
   .head h1{font-size:18px}
-  .progress{margin-left:0;width:100%}
   .card{padding:11px 12px}
   .urls .u{font-size:11.5px}
   .urls .lat{min-width:46px;font-size:11px}
@@ -182,12 +170,8 @@ body{
 
   <div class="toolbar">
     <div class="row">
-      <button class="btn on allb" id="btnAll" title="显示全部条目">全部 <span class="n" id="nAll">0</span></button>
-      <button class="btn" id="btnOnline" title="只看在线">在线 <span class="n" id="nOnline">0</span></button>
-      <button class="btn" id="btnOffline" title="只看离线">离线 <span class="n" id="nOffline">0</span></button>
       <div class="progress" id="progress"></div>
     </div>
-
     <div class="search">
       <span class="mag">⌕</span>
       <input id="q" type="search" placeholder="搜索名称、说明、网址或来源…" autocomplete="off">
@@ -220,7 +204,7 @@ body{
   var activeCardCount = 0;
 
   var state = {
-    group: 'all', status: 'all', keyword: '',
+    group: 'all', keyword: '',
     seed: 0, pinIdx: -1
   };
 
@@ -382,11 +366,12 @@ body{
     var kws = ((RAW.rotate || {}).keywords || []).filter(Boolean).map(function (k) {
       return String(k).toLowerCase();
     });
-    var pool = kws.length ? DATA.items.filter(function (it) {
-      return kws.some(function (k) { return it._hay.indexOf(k) !== -1; });
-    }) : DATA.items.slice();
+    if (!kws.length) { state.pinIdx = -1; return; }
 
-    if (!pool.length) pool = DATA.items.slice();
+    var pool = DATA.items.filter(function (it) {
+      return kws.some(function (k) { return it._hay.indexOf(k) !== -1; });
+    });
+
     if (!pool.length) { state.pinIdx = -1; return; }
 
     var idx = Math.floor(hash(pool.map(function (x) { return x._i; }).join('|'), state.seed) * pool.length);
@@ -517,7 +502,7 @@ body{
           var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
                   : u.status === 'checking' ? 'ing'
                   : u.status === 'bad' ? 'bad' : 'wt';
-          var latText = u.status === 'ok' ? '在线'
+          var latText = u.status === 'ok' ? (u.lat + ' ms')
                       : u.status === 'bad' ? '离线'
                       : u.status === 'checking' ? '检测中' : '未检测';
           return '<li data-uid="' + esc(u.uid) + '">' +
@@ -557,33 +542,50 @@ body{
     return '<article class="card' + (tpl.class ? ' ' + esc(tpl.class) : '') + '" data-i="' + it._i + '">' + out + '</article>';
   }
 
-  function rank(it) {
-    if (it._status === 'ok') return 0;
-    if (it._status === 'bad') return 2;
-    return 1;
-  }
-
   function matched(it) {
     if (state.group !== 'all' && it._group !== state.group) return false;
-    if (state.status === 'online' && it._status !== 'ok') return false;
-    if (state.status === 'offline' && it._status !== 'bad') return false;
     if (!state.keyword) return true;
     return it._hay.indexOf(state.keyword) !== -1;
   }
 
   function render() {
-    var rows = DATA.items.filter(matched).sort(function (a, b) {
-      var d = rank(a) - rank(b);
-      if (d) return d;
+    var pool = DATA.items.filter(matched);
+
+    var pinItem = null;
+    if (state.group === 'all' && state.pinIdx >= 0) {
+      var pin = DATA.items[state.pinIdx];
+      if (pool.indexOf(pin) !== -1) pinItem = pin;
+    }
+
+    var rest = pool.filter(function (x) { return x !== pinItem; });
+
+    var weighted = [];
+    var normal = [];
+    rest.forEach(function (it) {
+      if (it._weight !== NO_W) weighted.push(it);
+      else normal.push(it);
+    });
+
+    weighted.sort(function (a, b) {
       if (a._weight !== b._weight) return a._weight - b._weight;
       return a._rand - b._rand;
     });
 
-    if (state.pinIdx >= 0) {
-      var pin = DATA.items[state.pinIdx];
-      var pos = rows.indexOf(pin);
-      if (pos > 0) { rows.splice(pos, 1); rows.unshift(pin); }
-    }
+    var groupOrder = {};
+    DATA.groups.forEach(function (g, i) { groupOrder[g.id] = i; });
+
+    normal.sort(function (a, b) {
+      var da = groupOrder[a._group];
+      var db = groupOrder[b._group];
+      if (da == null) da = 1e9;
+      if (db == null) db = 1e9;
+      if (da !== db) return da - db;
+      return a._rand - b._rand;
+    });
+
+    var rows = [];
+    if (pinItem) rows.push(pinItem);
+    rows = rows.concat(weighted, normal);
 
     var html = rows.map(cardHtml).join('');
     if (!html) {
@@ -591,26 +593,6 @@ body{
              '<span style="font-size:12px;opacity:.7">换个分组或清空搜索后点条目右上角「检测」</span></div>';
     }
     listEl.innerHTML = html;
-    updateCounts();
-  }
-
-  function updateCounts() {
-    var on = 0, off = 0;
-    DATA.items.forEach(function (it) {
-      if (it._status === 'ok') on++;
-      else if (it._status === 'bad') off++;
-    });
-    el('nAll').textContent = DATA.items.length;
-    el('btnAll').title = '显示全部：' + DATA.items.length + ' 个条目';
-    el('nOnline').textContent = on;
-    el('nOffline').textContent = off;
-
-    el('btnAll').classList.toggle('on', state.status === 'all');
-    el('btnAll').classList.toggle('allb', state.status === 'all');
-    el('btnOnline').classList.toggle('on', state.status === 'online');
-    el('btnOnline').classList.toggle('okb', state.status === 'online');
-    el('btnOffline').classList.toggle('on', state.status === 'offline');
-    el('btnOffline').classList.toggle('offb', state.status === 'offline');
   }
 
   function patchUrl(uid) {
@@ -628,12 +610,11 @@ body{
       li.querySelector('.dot').className = 'dot ' + cls;
       var lat = li.querySelector('.lat');
       lat.className = 'lat' + (cls ? ' ' + cls : '');
-      lat.textContent = u.status === 'ok' ? '在线'
+      lat.textContent = u.status === 'ok' ? (u.lat + ' ms')
                       : u.status === 'bad' ? '离线'
                       : u.status === 'checking' ? '检测中' : '未检测';
     }
     updateCardPill(it);
-    updateCounts();
   }
 
   function updateCardPill(it) {
@@ -642,10 +623,7 @@ body{
     var span = card.querySelector('.st.btn-chk');
     if (!span) return;
     var pill = cardPill(it);
-    var wantCls = 'st ' + pill.cls;
-    if (span.className === wantCls && span.textContent === pill.text) return;
-
-    span.className = wantCls;
+    span.className = 'st ' + pill.cls;
     span.textContent = pill.text;
     if (pill.clickable) {
       span.setAttribute('data-i', it._i);
@@ -772,7 +750,6 @@ body{
     activeCardCount--;
     itemStatus(it);
     updateCardPill(it);
-    updateCounts();
     updateProgressView();
   }
 
@@ -785,7 +762,6 @@ body{
     activeCardCount++;
 
     refreshCard(it);
-    updateCounts();
     updateProgressView();
 
     it._urls.forEach(function (u) { pendingUrls.push({ it: it, u: u }); });
@@ -816,21 +792,6 @@ body{
       el('qClear').style.display = 'none';
     }
     renderGroups();
-    render();
-  });
-
-  el('btnAll').addEventListener('click', function () {
-    state.status = 'all';
-    render();
-  });
-
-  el('btnOnline').addEventListener('click', function () {
-    state.status = state.status === 'online' ? 'all' : 'online';
-    render();
-  });
-
-  el('btnOffline').addEventListener('click', function () {
-    state.status = state.status === 'offline' ? 'all' : 'offline';
     render();
   });
 
