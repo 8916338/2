@@ -11,7 +11,11 @@
   数据与渲染规则都在页面底部的 DATA 脚本块里。
   新增 / 增删内容只改 JSON，不动 HTML：
     items[]            条目本身（name / desc / group / tags / source / urls…）
+                       type 决定模板：api（默认）/ download / link / media
+                       下载、快链条目用单数 url + icon + 可选 version
     render.types{}     卡片模板：一组 blocks，按顺序渲染
+                       块：header / text / group / tags / sources / urls /
+                           image / links / row（行式卡片，参数见 drawer 说明）
   改数据两种方式：
     1) 直接改 DATA 里的 JSON
     2) 点右上角「{ } 数据」→ 粘贴 / 导入 tvbox-data.json → 应用
@@ -129,6 +133,44 @@ body{
 .lnk{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--acc);text-decoration:none;background:var(--acc-soft);border-radius:6px;padding:3px 9px}
 .lnk:hover{filter:brightness(.96);text-decoration:underline}
 
+/* ---------- 行式卡片：下载 / 推荐链接（JSON 的 row 块） ---------- */
+.card.dl,.card.lk{padding:10px 12px}
+.irow{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;min-width:0}
+.irow .ic{
+  position:relative;flex:none;width:44px;height:44px;border-radius:11px;overflow:hidden;
+  background:var(--soft);border:1px solid var(--line);display:grid;place-items:center;
+}
+.irow .ic i{font-style:normal;font-size:16px;font-weight:700;color:var(--dim2);line-height:1}
+.irow .ic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent}
+.irow .bd{flex:1;min-width:0}
+.irow .tt{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
+.irow .tt h3{margin:0;font-size:15px;font-weight:700;line-height:1.35;letter-spacing:.2px}
+.irow .v{
+  flex:none;font-size:10.5px;font-weight:700;color:var(--acc);background:var(--acc-soft);
+  border-radius:5px;padding:1px 6px;font-variant-numeric:tabular-nums;
+}
+.irow .d{
+  margin:2px 0 0;font-size:12px;color:var(--dim);line-height:1.5;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.irow .go{
+  flex:none;font-size:12px;font-weight:600;border-radius:8px;padding:6px 13px;
+  background:var(--soft);color:var(--acc);white-space:nowrap;transition:.15s;
+}
+.irow.dl .go{background:var(--acc);color:#fff}
+.irow.lk:hover .go{background:var(--acc);color:#fff}
+.irow .st{flex:none}
+.card.dl .meta-row,.card.lk .meta-row{padding-left:56px}
+@media (max-width:540px){.card.dl .meta-row,.card.lk .meta-row{padding-left:47px}}
+@media (max-width:540px){
+  .card.dl,.card.lk{padding:9px 11px}
+  .irow{gap:9px}
+  .irow .ic{width:38px;height:38px;border-radius:9px}
+  .irow .tt h3{font-size:14px}
+  .irow .go{padding:5px 10px;font-size:11.5px;border-radius:7px}
+  .irow .d{white-space:normal;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+}
+
 .urls{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .urls li{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:9px;padding:6px 9px;min-width:0}
 .dot{flex:none;width:6px;height:6px;border-radius:50%;background:var(--dim2)}
@@ -233,10 +275,13 @@ body{
     <div class="hint">
       条目字段：<code>name</code> · <code>desc</code> · <code>group</code> · <code>tags</code> ·
       <code>source</code> <code>[{name,url}]</code> · <code>urls</code> <code>["…"]</code>；
-      其它自定义字段（<code>logo</code>、<code>cover</code>、<code>links</code>、<code>type</code> 等）只影响渲染。
-      卡片样式在 <code>render.types</code> 里定义：<code>blocks</code> 按顺序渲染，
-      支持 <code>header / text / group / tags / sources / urls / image / links</code>，
-      新增样式只需加一组 blocks，不必改 HTML。
+      <code>type</code> 决定用哪套模板（缺省 <code>api</code>，另有 <code>download</code> / <code>link</code> / <code>media</code>）；
+      下载与快链条目用单数 <code>url</code> + <code>icon</code> + 可选 <code>version</code>，同样参与检测与排序。<br>
+      卡片模板在 <code>render.types</code> 里定义，<code>blocks</code> 按顺序渲染，可用块：
+      <code>header / text / group / tags / sources / urls / image / links / row</code>。
+      <code>row</code> 是行式卡片（图标 + 标题 + 版本 + 描述 + 按钮），
+      参数 <code>title / icon / meta / desc / url / action / kind / download</code>。
+      新增样式只加一组 blocks，不必改 HTML。
     </div>
     <textarea id="jsonBox" spellcheck="false"></textarea>
     <div class="hint">也可以点「导入文件」，选中 <code>tvbox-data.json</code> 后点「应用」。</div>
@@ -251,8 +296,7 @@ body{
 
 <div class="toast" id="toast"></div>
 
-<script id="DATA" type="application/json">
-{
+<script id="DATA" type="application/json">{
   "version": 3,
   "site": {
     "title": "TVBox 接口导航",
@@ -302,12 +346,24 @@ body{
     {
       "id": "shell",
       "name": "空壳",
+      "isApi": false,
+      "res": true
+    },
+    {
+      "id": "fast",
+      "name": "快链",
+      "isApi": false
+    },
+    {
+      "id": "download",
+      "name": "下载",
       "isApi": false
     },
     {
       "id": "other",
       "name": "其他",
-      "isApi": false
+      "isApi": false,
+      "res": true
     }
   ],
   "weights": {
@@ -366,6 +422,36 @@ body{
           {
             "as": "urls",
             "field": "urls"
+          }
+        ]
+      },
+      "download": {
+        "class": "dl",
+        "blocks": [
+          {
+            "as": "row",
+            "kind": "dl",
+            "title": "name",
+            "icon": "icon",
+            "meta": "version",
+            "desc": "desc",
+            "url": "url",
+            "action": "下载"
+          }
+        ]
+      },
+      "link": {
+        "class": "lk",
+        "blocks": [
+          {
+            "as": "row",
+            "kind": "lk",
+            "title": "name",
+            "icon": "icon",
+            "meta": "version",
+            "desc": "desc",
+            "url": "url",
+            "action": "前往"
           }
         ]
       },
@@ -762,10 +848,66 @@ body{
       "urls": [
         "https://jsonlint.com"
       ]
+    },
+    {
+      "name": "真心下载包",
+      "type": "download",
+      "group": "download",
+      "url": "https://plum.now61.cn/f/pgsd/%E7%9C%9F%E5%BF%83.zip",
+      "icon": "https://plum.now61.cn/f/WBto/%E7%9C%9F%E5%BF%83.jpg",
+      "version": "20260815",
+      "desc": "整包离线导入，解压后本地加载",
+      "tags": [
+        "离线包"
+      ]
+    },
+    {
+      "name": "归零box",
+      "type": "link",
+      "group": "fast",
+      "url": "https://tvbox.moliys.icu/apk",
+      "icon": "https://woyou.pro/vip/归零.jpg",
+      "desc": "壳子新势力"
+    },
+    {
+      "name": "TvBox 资源导航",
+      "type": "link",
+      "group": "fast",
+      "url": "https://tvbox.shenzjd.com",
+      "desc": "带探活状态与响应耗时的接口索引"
+    },
+    {
+      "name": "聚玩盒子",
+      "type": "link",
+      "group": "fast",
+      "url": "https://www.juwanhezi.com",
+      "desc": "单仓 / 多仓 / 本地包分类整理"
+    },
+    {
+      "name": "qist 仓库",
+      "type": "link",
+      "group": "fast",
+      "url": "https://github.com/qist/tvbox",
+      "desc": "配置模板与说明文档"
+    },
+    {
+      "name": "归零box 客户端",
+      "type": "download",
+      "group": "other",
+      "url": "https://tvbox.moliys.icu/apk",
+      "icon": "https://woyou.pro/vip/归零.jpg",
+      "version": "latest",
+      "desc": "安卓安装包下载页"
+    },
+    {
+      "name": "Easy 导航",
+      "type": "link",
+      "group": "other",
+      "url": "https://easy321.top",
+      "desc": "影视仓配置与教程"
     }
   ]
-}
-</script>
+}</script>
 
 <script>
 (function(){
@@ -835,7 +977,7 @@ function normalize(raw){
   var gs = (raw.groups || []).map(function(g, i){
     return {
       id: g.id || ('g' + i), name: g.name || g.id || '其他',
-      isApi: g.isApi !== false
+      isApi: g.isApi !== false, res: g.res === true
     };
   });
   var gm = {};
@@ -848,7 +990,12 @@ function normalize(raw){
     for (var k in src) if (Object.prototype.hasOwnProperty.call(src, k)) o[k] = src[k];
 
     var g = gm[src.group] || { id: src.group || 'other', name: '其他', isApi: false };
-    var urls = (src.urls || []).map(function(u){
+    // urls 数组优先；没有数组时用单个 url 字段（下载包 / 推荐链接这类条目）
+    var rawList = Array.isArray(src.urls) ? src.urls.slice()
+                : (src.urls ? [src.urls] : []);
+    if (!rawList.length && src.url) rawList.push(src.url);
+
+    var urls = rawList.map(function(u){
       return typeof u === 'string' ? u : (u && u.url) || '';
     }).filter(Boolean).map(function(u, k){
       return { uid: i + '#' + k, url: u, status: 'wait', lat: null };
@@ -859,6 +1006,7 @@ function normalize(raw){
     o._group = g.id;
     o._groupName = g.name;
     o._isApi = g.isApi;
+    o._res = g.res === true;
     o._urls = urls;
     o._status = 'wait';
     o._lat = null;
@@ -897,12 +1045,14 @@ function pickPin(){
 /* ================= 头部 / 分组 ================= */
 function renderHead(){
   el('title').textContent = DATA.site.title || 'TVBox 接口导航';
-  var api = 0, url = 0;
-  DATA.items.forEach(function(i){ if (i._isApi) api++; url += i._urls.length; });
-  var res = DATA.items.length - api;
+  var api = 0, res = 0, url = 0;
+  DATA.items.forEach(function(i){
+    if (i._isApi) api++; else res++;
+    url += i._urls.length;
+  });
   el('meta').innerHTML = '共 <b>' + api + '</b> 个接口' +
-    (res ? ' · <b>' + res + '</b> 个空壳/其他' : '') +
-    ' · <b>' + url + '</b> 条地址';
+    (res ? ' · <b>' + res + '</b> 个资源（下载 / 快链 / 空壳）' : '') +
+    ' · <b>' + url + '</b> 条链接';
   el('foot').textContent = DATA.site.footer || '';
 }
 
@@ -915,7 +1065,7 @@ function renderGroups(){
   DATA.groups.forEach(function(g){
     var n = counts[g.id] || 0;
     if (!n) return;
-    html += '<button class="chip' + (g.isApi ? '' : ' res') + (state.group === g.id ? ' active' : '') +
+    html += '<button class="chip' + (g.res ? ' res' : '') + (state.group === g.id ? ' active' : '') +
             '" data-g="' + esc(g.id) + '">' + esc(g.name) + ' <span class="c">' + n + '</span></button>';
   });
   groupsEl.innerHTML = html;
@@ -961,7 +1111,7 @@ function blockHtml(it, b){
       return v ? '<p class="desc">' + esc(v) + '</p>' : '';
 
     case 'group':
-      return '<span class="gtag' + (it._isApi ? '' : ' res') + '">' + esc(it._groupName) + '</span>';
+      return '<span class="gtag' + (it._res ? ' res' : '') + '">' + esc(it._groupName) + '</span>';
 
     case 'tags':
       return (Array.isArray(v) ? v : []).filter(Boolean).map(function(t){
@@ -982,6 +1132,34 @@ function blockHtml(it, b){
 
     case 'image':
       return v ? '<img class="' + esc(b.class || 'cover') + '" src="' + esc(v) + '" alt="" loading="lazy">' : '';
+
+    case 'row': {
+      var title = it[b.title || 'name'] || '';
+      var icon  = b.icon ? it[b.icon] : '';
+      var meta  = b.meta ? it[b.meta] : '';
+      var desc  = b.desc ? it[b.desc] : '';
+      var href  = b.url ? it[b.url] : (it._urls[0] ? it._urls[0].url : '');
+      var act   = b.action || '';
+      var pill  = (b.status !== false && it._urls.length) ? statusMeta(it) : null;
+      if (!title) return '';
+
+      var ic = '<span class="ic"><i>' + esc(String(title).charAt(0)) + '</i>' +
+               (icon ? '<img src="' + esc(icon) + '" alt="">' : '') + '</span>';
+      var tagOpen = href
+        ? '<a class="irow ' + esc(b.kind || 'lk') + '" href="' + esc(href) + '" target="_blank" rel="noopener"' +
+          (b.download ? ' download' : '') + '>'
+        : '<div class="irow ' + esc(b.kind || 'lk') + '">';
+      var tagClose = href ? '</a>' : '</div>';
+
+      return tagOpen + ic +
+        '<div class="bd"><div class="tt"><h3>' + esc(title) + '</h3>' +
+          (meta ? '<span class="v">' + esc(meta) + '</span>' : '') +
+        '</div>' +
+        (desc ? '<p class="d">' + esc(desc) + '</p>' : '') + '</div>' +
+        (pill ? '<span class="st ' + pill.cls + '">' + pill.text + '</span>' : '') +
+        (act ? '<span class="go">' + esc(act) + '</span>' : '') +
+        tagClose;
+    }
 
     case 'urls':
       if (!it._urls.length) return '';
