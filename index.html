@@ -8,7 +8,10 @@
   ============================================================
   TVBox 接口导航 · 单文件页面（数据与视图分离）
   ------------------------------------------------------------
-  数据在页面底部的 DATA 脚本块（application/json）里。
+  数据与渲染规则都在页面底部的 DATA 脚本块里。
+  新增 / 增删内容只改 JSON，不动 HTML：
+    items[]            条目本身（name / desc / group / tags / source / urls…）
+    render.types{}     卡片模板：一组 blocks，按顺序渲染
   改数据两种方式：
     1) 直接改 DATA 里的 JSON
     2) 点右上角「{ } 数据」→ 粘贴 / 导入 tvbox-data.json → 应用
@@ -97,7 +100,7 @@ body{
 .chip.res{color:var(--dim2);border-style:dashed}
 .chip.res.active{background:var(--off);border-color:var(--off);color:#fff;border-style:solid}
 
-/* ---------- 卡片 ---------- */
+/* ---------- 卡片（通用容器） ---------- */
 .card{
   background:var(--card);border:1px solid var(--line);border-radius:14px;
   padding:12px 15px;margin-bottom:10px;box-shadow:var(--shadow);
@@ -105,19 +108,13 @@ body{
 }
 .card:hover{border-color:#d6dae1;transform:translateY(-1px)}
 @media (prefers-color-scheme:dark){.card:hover{border-color:#2f3644}}
-.card.pin{border-color:var(--acc);background:linear-gradient(180deg,var(--acc-soft),var(--card) 58%)}
-.card.flash{animation:flash .8s}
-@keyframes flash{0%{box-shadow:0 0 0 3px var(--acc-soft)}100%{box-shadow:var(--shadow)}}
 .ctop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ctop h3{margin:0;font-size:15.5px;font-weight:700;letter-spacing:.2px;min-width:0}
-.w-badge{flex:none;font-size:10.5px;font-weight:700;color:var(--acc);background:var(--acc-soft);border-radius:5px;padding:1px 6px;font-variant-numeric:tabular-nums}
-.pin-tag{flex:none;font-size:10.5px;font-weight:700;color:#fff;background:var(--acc);border-radius:5px;padding:1px 7px;white-space:nowrap}
-.reroll{border:1px solid var(--acc);background:transparent;color:var(--acc);border-radius:6px;height:20px;padding:0 6px;font-size:11px;cursor:pointer;font-family:inherit;line-height:1}
-.reroll:hover{background:var(--acc);color:#fff}
 .ctop .spacer{flex:1}
+.logo{flex:none;width:26px;height:26px;border-radius:7px;object-fit:cover;background:var(--soft)}
+.cover{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin:9px 0 0;background:var(--soft)}
 .st{font-size:11.5px;font-weight:600;border-radius:20px;padding:2px 9px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .st.wait{color:var(--dim2);background:var(--off-soft)}
-.st.ing{color:var(--acc);background:var(--acc-soft)}
 .st.ok{color:var(--ok);background:var(--ok-soft)}
 .st.mid{color:var(--warn);background:var(--warn-soft)}
 .st.bad{color:var(--off);background:var(--off-soft)}
@@ -129,6 +126,8 @@ body{
 .src{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;color:var(--dim);text-decoration:none;border-bottom:1px dashed var(--line);padding-bottom:1px}
 .src:hover{color:var(--acc);border-bottom-color:var(--acc)}
 .src::after{content:"↗";font-size:10px;opacity:.7}
+.lnk{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--acc);text-decoration:none;background:var(--acc-soft);border-radius:6px;padding:3px 9px}
+.lnk:hover{filter:brightness(.96);text-decoration:underline}
 
 .urls{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
 .urls li{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:9px;padding:6px 9px;min-width:0}
@@ -179,7 +178,6 @@ body{
 }
 .toast.show{opacity:1;transform:translateX(-50%)}
 .foot{margin-top:22px;text-align:center;color:var(--dim2);font-size:11.5px;line-height:1.8}
-.foot .note{margin-top:5px;opacity:.82}
 
 @media (max-width:640px){
   .wrap{padding:14px 12px 80px}
@@ -233,10 +231,12 @@ body{
   </header>
   <div class="body">
     <div class="hint">
-      改完点「应用」立即生效（不写回文件）。字段：<code>id</code> 渲染 ID（可省，自动生成）·
-      <code>name</code> 名称 · <code>desc</code> 说明（可空）· <code>group</code> 分组 ·
-      <code>tags</code> 标签（可空）· <code>source</code> 来源数组 <code>[{name,url}]</code>（可空）·
-      <code>urls</code> 地址字符串数组。排序权重写在 <code>weights</code> 里，按名称精确匹配，数字越小越靠前。
+      条目字段：<code>name</code> · <code>desc</code> · <code>group</code> · <code>tags</code> ·
+      <code>source</code> <code>[{name,url}]</code> · <code>urls</code> <code>["…"]</code>；
+      其它自定义字段（<code>logo</code>、<code>cover</code>、<code>links</code>、<code>type</code> 等）只影响渲染。
+      卡片样式在 <code>render.types</code> 里定义：<code>blocks</code> 按顺序渲染，
+      支持 <code>header / text / group / tags / sources / urls / image / links</code>，
+      新增样式只需加一组 blocks，不必改 HTML。
     </div>
     <textarea id="jsonBox" spellcheck="false"></textarea>
     <div class="hint">也可以点「导入文件」，选中 <code>tvbox-data.json</code> 后点「应用」。</div>
@@ -251,8 +251,9 @@ body{
 
 <div class="toast" id="toast"></div>
 
-<script id="DATA" type="application/json">{
-  "version": 2,
+<script id="DATA" type="application/json">
+{
+  "version": 3,
   "site": {
     "title": "TVBox 接口导航",
     "footer": "数据来自网络公开资源，仅供学习与测试，请勿用于商业用途；接口可用性随时变化，请以实际检测为准。"
@@ -335,9 +336,73 @@ body{
     "seed": "time-random",
     "randomRange": 10000
   },
+  "render": {
+    "default": "api",
+    "types": {
+      "api": {
+        "blocks": [
+          {
+            "as": "header",
+            "field": "name"
+          },
+          {
+            "as": "text",
+            "field": "desc"
+          },
+          {
+            "as": "group",
+            "inline": true
+          },
+          {
+            "as": "tags",
+            "field": "tags",
+            "inline": true
+          },
+          {
+            "as": "sources",
+            "field": "source",
+            "inline": true
+          },
+          {
+            "as": "urls",
+            "field": "urls"
+          }
+        ]
+      },
+      "media": {
+        "class": "media",
+        "blocks": [
+          {
+            "as": "header",
+            "field": "name",
+            "status": false,
+            "logo": true
+          },
+          {
+            "as": "image",
+            "field": "cover",
+            "class": "cover"
+          },
+          {
+            "as": "text",
+            "field": "desc"
+          },
+          {
+            "as": "tags",
+            "field": "tags",
+            "inline": true
+          },
+          {
+            "as": "links",
+            "field": "links",
+            "inline": true
+          }
+        ]
+      }
+    }
+  },
   "items": [
     {
-      "id": "update",
       "name": "更新专用接口",
       "desc": "每日更新的综合点播线路，影视仓 / OK影视均可直接用",
       "group": "single",
@@ -356,7 +421,6 @@ body{
       ]
     },
     {
-      "id": "x4pro",
       "name": "菠菜园pro",
       "desc": "X4 内核，菠菜园进阶版，直播与点播混排",
       "group": "single",
@@ -374,7 +438,6 @@ body{
       ]
     },
     {
-      "id": "fty",
       "name": "饭太硬",
       "desc": "混合线路，荐片等资源，长期稳定，镜像最多",
       "group": "single",
@@ -398,7 +461,6 @@ body{
       ]
     },
     {
-      "id": "moyu",
       "name": "摸鱼",
       "desc": "摸鱼儿维护，网盘与直链混合，更新频繁",
       "group": "single",
@@ -418,7 +480,6 @@ body{
       ]
     },
     {
-      "id": "wex",
       "name": "王二小",
       "desc": "以网盘 4K 为主，适合有网盘会员的用户",
       "group": "single",
@@ -439,7 +500,6 @@ body{
       ]
     },
     {
-      "id": "xiaosa",
       "name": "潇洒",
       "desc": "综合高清线路，Github 与凯速双托管",
       "group": "single",
@@ -459,17 +519,16 @@ body{
       ]
     },
     {
-      "id": "aowu",
       "name": "嗷呜",
-      "desc": "",
+      "desc": "英格里希嗷呜维护，多域名轮换",
       "group": "single",
       "tags": [
-        ""
+        "多线"
       ],
       "source": [
         {
-          "name": "",
-          "url": ""
+          "name": "推荐·海量接口备份",
+          "url": "https://1.wudaozhe.net"
         }
       ],
       "urls": [
@@ -479,7 +538,6 @@ body{
       ]
     },
     {
-      "id": "juwan",
       "name": "聚玩",
       "desc": "小盒子系，点播线路较全",
       "group": "single",
@@ -497,7 +555,6 @@ body{
       ]
     },
     {
-      "id": "xhztv-dc",
       "name": "小盒子多仓",
       "desc": "空壳多仓订阅，一次导入全部线路",
       "group": "multi",
@@ -516,7 +573,6 @@ body{
       ]
     },
     {
-      "id": "sg-dc",
       "name": "拾光多仓",
       "desc": "拾光整理的 SVIP 多仓合集",
       "group": "multi",
@@ -535,7 +591,6 @@ body{
       ]
     },
     {
-      "id": "kimentanm",
       "name": "Kimentanm 直播源",
       "desc": "APTV 作者的 IPTV 源，IPv4 为主",
       "group": "live",
@@ -553,7 +608,6 @@ body{
       ]
     },
     {
-      "id": "guovin",
       "name": "Guovin 直播源",
       "desc": "自动更新聚合源，频道多、体积大",
       "group": "live",
@@ -572,7 +626,6 @@ body{
       ]
     },
     {
-      "id": "catvod",
       "name": "CatVodSpider 演示源",
       "desc": "猫影视 / CatVod 格式，需要支持猫源的壳子",
       "group": "cat",
@@ -590,7 +643,6 @@ body{
       ]
     },
     {
-      "id": "music",
       "name": "音源合集",
       "desc": "音乐源整合，壳子需支持音源模块",
       "group": "music",
@@ -608,7 +660,6 @@ body{
       ]
     },
     {
-      "id": "book",
       "name": "书源合集",
       "desc": "阅读 3.0 书源，条目极多，导入需耐心",
       "group": "book",
@@ -626,7 +677,6 @@ body{
       ]
     },
     {
-      "id": "comic",
       "name": "漫画源合集",
       "desc": "漫画源整合，配合漫画壳子使用",
       "group": "comic",
@@ -644,7 +694,6 @@ body{
       ]
     },
     {
-      "id": "danmu",
       "name": "弹幕接口",
       "desc": "弹幕数据源，壳子内配置弹幕地址用",
       "group": "danmu",
@@ -662,7 +711,6 @@ body{
       ]
     },
     {
-      "id": "fongmi",
       "name": "影视仓（FongMi Release）",
       "desc": "空壳软件下载页，装好后自行导入上面的接口",
       "group": "shell",
@@ -681,7 +729,6 @@ body{
       ]
     },
     {
-      "id": "tvboxosc",
       "name": "TVBox 手机版",
       "desc": "手机竖屏版空壳，适合安卓手机直接装",
       "group": "shell",
@@ -700,7 +747,6 @@ body{
       ]
     },
     {
-      "id": "jsonlint",
       "name": "JSON 校验工具",
       "desc": "编辑接口 JSON 后用来查语法错误",
       "group": "other",
@@ -718,7 +764,8 @@ body{
       ]
     }
   ]
-}</script>
+}
+</script>
 
 <script>
 (function(){
@@ -735,11 +782,16 @@ var RAW = null, DATA = null;
 var state = {
   group: 'all', status: 'all', keyword: '',
   detecting: false, abort: false, done: 0, total: 0,
-  seed: 0, pinId: null
+  seed: 0, pinIdx: -1
 };
 
 function el(id){ return document.getElementById(id); }
 var listEl = el('list'), groupsEl = el('groups');
+
+// 图片字段加载失败时自动隐藏，避免 JSON 里写错地址出现破图
+document.addEventListener('error', function(e){
+  if (e.target && e.target.tagName === 'IMG') e.target.style.display = 'none';
+}, true);
 
 /* ================= 工具 ================= */
 function esc(s){
@@ -761,12 +813,28 @@ function toast(msg){
   t._tm = setTimeout(function(){ t.classList.remove('show'); }, 1900);
 }
 
-/* ================= 归一化 ================= */
+/* ================= 归一化（数据 → 渲染对象） ================= */
+// 任意字段都能被搜索：把值拍平成文本
+function flat(v){
+  if (v == null) return '';
+  var t = typeof v;
+  if (t === 'string' || t === 'number' || t === 'boolean') return v + ' ';
+  if (Array.isArray(v)) return v.map(flat).join('');
+  if (t === 'object') return Object.keys(v).map(function(k){ return flat(v[k]); }).join('');
+  return '';
+}
+function asList(v){
+  if (!v) return [];
+  return (Array.isArray(v) ? v : [v]).filter(function(x){ return x && (x.name || x.url); });
+}
+
 function normalize(raw){
+  var render = raw.render || {};
+  var def = render.default || 'default';
+
   var gs = (raw.groups || []).map(function(g, i){
     return {
       id: g.id || ('g' + i), name: g.name || g.id || '其他',
-      weight: typeof g.weight === 'number' ? g.weight : 10,
       isApi: g.isApi !== false
     };
   });
@@ -774,42 +842,36 @@ function normalize(raw){
   gs.forEach(function(g){ gm[g.id] = g; });
 
   var W = raw.weights || {};
-  var used = {};
 
-  var items = (raw.items || []).map(function(it, i){
-    var id = String(it.id || ('i' + i));
-    if (used[id]) id = id + '-' + i;          // 渲染 ID 唯一
-    used[id] = 1;
+  var items = (raw.items || []).map(function(src, i){
+    var o = {};
+    for (var k in src) if (Object.prototype.hasOwnProperty.call(src, k)) o[k] = src[k];
 
-    var g = gm[it.group] || { id: it.group || 'other', name: '其他', isApi: false };
-    var src = it.source;
-    if (src && !Array.isArray(src)) src = [src];
-
-    var urls = (it.urls || []).map(function(u){
+    var g = gm[src.group] || { id: src.group || 'other', name: '其他', isApi: false };
+    var urls = (src.urls || []).map(function(u){
       return typeof u === 'string' ? u : (u && u.url) || '';
     }).filter(Boolean).map(function(u, k){
-      return { uid: id + '#' + k, url: u, status: 'wait', lat: null };
+      return { uid: i + '#' + k, url: u, status: 'wait', lat: null };
     });
 
-    var w = W[it.name];                        // 权重按名称精确匹配
-
-    return {
-      id: id,
-      name: it.name || '未命名',
-      desc: it.desc || '',
-      group: g.id, groupName: g.name, isApi: g.isApi,
-      tags: Array.isArray(it.tags) ? it.tags.filter(Boolean) : [],
-      weight: (typeof w === 'number' && w > 0) ? w : NO_W,
-      source: (src || []).filter(function(s){ return s && (s.name || s.url); }),
-      urls: urls, status: 'wait', lat: null,
-      rand: hash(id, state.seed)
-    };
+    o._i = i;
+    o._type = src.type || def;
+    o._group = g.id;
+    o._groupName = g.name;
+    o._isApi = g.isApi;
+    o._urls = urls;
+    o._status = 'wait';
+    o._lat = null;
+    o._weight = (typeof W[src.name] === 'number' && W[src.name] > 0) ? W[src.name] : NO_W;
+    o._rand = hash(i + '|' + (src.name || ''), state.seed);
+    o._hay = (flat(src) + ' ' + urls.map(function(u){ return u.url; }).join(' ')).toLowerCase();
+    return o;
   });
 
-  return { groups: gs, items: items, site: raw.site || {}, rotate: raw.rotate || {} };
+  return { groups: gs, items: items, site: raw.site || {}, rotate: raw.rotate || {}, render: render };
 }
 
-/* ================= 首条轮换 ================= */
+/* ================= 首条轮换（只影响排位，不加标记） ================= */
 function newSeed(){
   var rot = RAW.rotate || {};
   var n = Number(rot.randomRange) || 10000;
@@ -817,46 +879,36 @@ function newSeed(){
   return Math.floor(Math.random() * n);
 }
 
-function haystack(it){
-  return (it.name + ' ' + it.desc + ' ' + it.groupName + ' ' + it.tags.join(' ') + ' ' +
-    it.source.map(function(s){ return (s.name || '') + ' ' + (s.url || ''); }).join(' ') + ' ' +
-    it.urls.map(function(u){ return u.url; }).join(' ')).toLowerCase();
-}
-
 function pickPin(){
   var kws = ((RAW.rotate || {}).keywords || []).filter(Boolean).map(function(k){
     return String(k).toLowerCase();
   });
   var pool = kws.length ? DATA.items.filter(function(it){
-    var hay = haystack(it);
-    return kws.some(function(k){ return hay.indexOf(k) !== -1; });
+    return kws.some(function(k){ return it._hay.indexOf(k) !== -1; });
   }) : DATA.items.slice();
 
   if (!pool.length) pool = DATA.items.slice();     // 关键词没命中 → 全量兜底
-  if (!pool.length){ state.pinId = null; return; }
+  if (!pool.length){ state.pinIdx = -1; return; }
 
-  var idx = Math.floor(hash(pool.map(function(x){ return x.id; }).join('|'), state.seed) * pool.length);
-  state.pinId = pool[Math.min(idx, pool.length - 1)].id;
+  var idx = Math.floor(hash(pool.map(function(x){ return x._i; }).join('|'), state.seed) * pool.length);
+  state.pinIdx = pool[Math.min(idx, pool.length - 1)]._i;
 }
 
 /* ================= 头部 / 分组 ================= */
 function renderHead(){
   el('title').textContent = DATA.site.title || 'TVBox 接口导航';
   var api = 0, url = 0;
-  DATA.items.forEach(function(i){ if (i.isApi) api++; url += i.urls.length; });
+  DATA.items.forEach(function(i){ if (i._isApi) api++; url += i._urls.length; });
   var res = DATA.items.length - api;
   el('meta').innerHTML = '共 <b>' + api + '</b> 个接口' +
     (res ? ' · <b>' + res + '</b> 个空壳/其他' : '') +
     ' · <b>' + url + '</b> 条地址';
-  el('foot').innerHTML =
-    '<div>' + esc(DATA.site.footer || '') + '</div>' +
-    '<div class="note">延时检测只验证服务器是否有响应（有响应即有效），不校验接口内容；' +
-    '返回 403、404、图片或错误页都属正常，实际能否解析以 TVBox 内为准。</div>';
+  el('foot').textContent = DATA.site.footer || '';
 }
 
 function renderGroups(){
   var counts = { all: DATA.items.length };
-  DATA.items.forEach(function(i){ counts[i.group] = (counts[i.group] || 0) + 1; });
+  DATA.items.forEach(function(i){ counts[i._group] = (counts[i._group] || 0) + 1; });
 
   var html = '<button class="chip' + (state.group === 'all' ? ' active' : '') +
              '" data-g="all">全部 <span class="c">' + counts.all + '</span></button>';
@@ -871,101 +923,144 @@ function renderGroups(){
 
 /* ================= 状态 ================= */
 function itemStatus(it){
-  var best = null, checking = false, blocked = false, allDown = it.urls.length > 0;
-  it.urls.forEach(function(u){
+  var best = null, checking = false, blocked = false, allDown = it._urls.length > 0;
+  it._urls.forEach(function(u){
     if (u.status === 'ok' && (best === null || u.lat < best)) best = u.lat;
     if (u.status === 'checking') checking = true;
     if (u.status === 'blocked') blocked = true;
     if (u.status !== 'bad' && u.status !== 'blocked') allDown = false;
   });
-  if (best !== null){ it.status = 'ok'; it.lat = best; return; }
-  if (checking){ it.status = 'wait'; it.lat = null; return; }
-  if (allDown){ it.status = blocked ? 'blocked' : 'bad'; it.lat = null; return; }
-  it.status = 'wait'; it.lat = null;
+  if (best !== null){ it._status = 'ok'; it._lat = best; return; }
+  if (checking){ it._status = 'wait'; it._lat = null; return; }
+  if (allDown){ it._status = blocked ? 'blocked' : 'bad'; it._lat = null; return; }
+  it._status = 'wait'; it._lat = null;
 }
 
-function statusMeta(st, lat){
-  if (st === 'ok') return { cls: lat >= SLOW_MS ? 'mid' : 'ok', text: lat + ' ms' };
-  if (st === 'bad') return { cls: 'bad', text: '离线' };
-  if (st === 'blocked') return { cls: 'bad', text: '受限' };
+// 受限沿用延时样式（琥珀色），与离线的灰色区分
+function statusMeta(it){
+  if (it._status === 'ok') return { cls: it._lat >= SLOW_MS ? 'mid' : 'ok', text: it._lat + ' ms' };
+  if (it._status === 'blocked') return { cls: 'mid', text: '受限' };
+  if (it._status === 'bad') return { cls: 'bad', text: '离线' };
   return { cls: 'wait', text: '待检测' };
 }
 
-/* ================= 卡片 ================= */
-function cardHtml(it, pin){
-  var sm = statusMeta(it.status, it.lat);
+/* ================= 通用块渲染 ================= */
+function blockHtml(it, b){
+  var v = b.field ? it[b.field] : null;
 
-  var meta = '<span class="gtag' + (it.isApi ? '' : ' res') + '">' + esc(it.groupName) + '</span>';
-  it.tags.forEach(function(t){ meta += '<span class="tag">' + esc(t) + '</span>'; });
-  it.source.forEach(function(s){
-    meta += s.url
-      ? '<a class="src" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name || s.url) + '</a>'
-      : '<span class="tag">' + esc(s.name) + '</span>';
+  switch (b.as){
+    case 'header':
+      var logo = b.logo && it.logo ? '<img class="logo" src="' + esc(it.logo) + '" alt="" loading="lazy">' : '';
+      var name = it[b.field || 'name'] || '';
+      var pill = (b.status !== false && it._urls.length) ? statusMeta(it) : null;
+      return '<div class="ctop">' + logo + '<h3>' + esc(name) + '</h3>' +
+        (pill ? '<span class="spacer"></span><span class="st ' + pill.cls + '">' + pill.text + '</span>' : '') +
+      '</div>';
+
+    case 'text':
+      return v ? '<p class="desc">' + esc(v) + '</p>' : '';
+
+    case 'group':
+      return '<span class="gtag' + (it._isApi ? '' : ' res') + '">' + esc(it._groupName) + '</span>';
+
+    case 'tags':
+      return (Array.isArray(v) ? v : []).filter(Boolean).map(function(t){
+        return '<span class="tag">' + esc(t) + '</span>';
+      }).join('');
+
+    case 'sources':
+      return asList(v).map(function(s){
+        return s.url
+          ? '<a class="src" href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name || s.url) + '</a>'
+          : '<span class="tag">' + esc(s.name) + '</span>';
+      }).join('');
+
+    case 'links':
+      return asList(v).map(function(s){
+        return '<a class="lnk" href="' + esc(s.url || '#') + '" target="_blank" rel="noopener">' + esc(s.name || s.url) + '</a>';
+      }).join('');
+
+    case 'image':
+      return v ? '<img class="' + esc(b.class || 'cover') + '" src="' + esc(v) + '" alt="" loading="lazy">' : '';
+
+    case 'urls':
+      if (!it._urls.length) return '';
+      return '<ul class="urls">' + it._urls.map(function(u){
+        var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
+                : u.status === 'checking' ? 'ing'
+                : u.status === 'blocked' ? 'mid'
+                : u.status === 'bad' ? 'bad' : '';
+        var lat = u.status === 'ok' ? (u.lat + ' ms')
+                : u.status === 'checking' ? '…'
+                : u.status === 'blocked' ? '受限'
+                : u.status === 'bad' ? '离线' : '—';
+        return '<li data-uid="' + esc(u.uid) + '">' +
+          '<span class="dot ' + cls + '"></span>' +
+          '<a class="u" href="' + esc(u.url) + '" target="_blank" rel="noopener" title="' + esc(u.url) + '">' + esc(showUrl(u.url)) + '</a>' +
+          '<span class="lat' + (cls ? ' ' + cls : '') + '">' + lat + '</span>' +
+          '<button class="cp" data-url="' + esc(u.url) + '">复制</button>' +
+        '</li>';
+      }).join('') + '</ul>';
+
+    default:
+      return '';   // 未知块类型静默跳过，改 JSON 不会白屏
+  }
+}
+
+function typeOf(it){
+  var types = DATA.render.types || {};
+  return types[it._type] || types[DATA.render.default] ||
+         { blocks: [{ as: 'header' }, { as: 'text', field: 'desc' }, { as: 'urls' }] };
+}
+
+function cardHtml(it){
+  var tpl = typeOf(it);
+  var blocks = tpl.blocks || [];
+  var out = '', inline = '';
+
+  blocks.forEach(function(b){
+    var h = blockHtml(it, b);
+    if (!h) return;
+    if (b.inline){ inline += h; return; }
+    if (inline){ out += '<div class="meta-row">' + inline + '</div>'; inline = ''; }
+    out += h;
   });
+  if (inline) out += '<div class="meta-row">' + inline + '</div>';
 
-  var urls = it.urls.map(function(u){
-    var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
-            : u.status === 'checking' ? 'ing'
-            : (u.status === 'bad' || u.status === 'blocked') ? 'bad' : '';
-    var lat = u.status === 'ok' ? (u.lat + ' ms')
-            : u.status === 'checking' ? '…'
-            : u.status === 'bad' ? '离线'
-            : u.status === 'blocked' ? '受限' : '—';
-    return '<li data-uid="' + esc(u.uid) + '">' +
-      '<span class="dot ' + cls + '"></span>' +
-      '<a class="u" href="' + esc(u.url) + '" target="_blank" rel="noopener" title="' + esc(u.url) + '">' + esc(showUrl(u.url)) + '</a>' +
-      '<span class="lat' + (cls ? ' ' + cls : '') + '">' + lat + '</span>' +
-      '<button class="cp" data-url="' + esc(u.url) + '">复制</button>' +
-    '</li>';
-  }).join('');
-
-  return '<article class="card' + (pin ? ' pin' : '') + '" data-id="' + esc(it.id) + '">' +
-    '<div class="ctop">' +
-      (pin ? '<span class="pin-tag">随机展示</span>' : '') +
-      '<h3>' + esc(it.name) + '</h3>' +
-      (it.weight !== NO_W ? '<span class="w-badge" title="排序权重，数字越小越靠前">W' + it.weight + '</span>' : '') +
-      (pin ? '<button class="reroll" id="btnReroll" title="换一条">↻ 换一条</button>' : '') +
-      '<span class="spacer"></span>' +
-      '<span class="st ' + sm.cls + '">' + sm.text + '</span>' +
-    '</div>' +
-    (it.desc ? '<p class="desc">' + esc(it.desc) + '</p>' : '') +
-    '<div class="meta-row">' + meta + '</div>' +
-    (it.urls.length ? '<ul class="urls">' + urls + '</ul>' : '') +
-  '</article>';
+  return '<article class="card' + (tpl.class ? ' ' + esc(tpl.class) : '') + '">' + out + '</article>';
 }
 
 /* ================= 排序 / 过滤 ================= */
 function rank(it){
-  if (it.status === 'ok') return 0;                              // 在线
-  if (it.status === 'bad' || it.status === 'blocked') return 2;  // 离线
-  return 1;                                                      // 待检测
+  if (it._status === 'ok') return 0;                              // 在线
+  if (it._status === 'bad' || it._status === 'blocked') return 2;  // 离线 / 受限
+  return 1;                                                        // 待检测
 }
 
 function matched(it){
-  if (state.group !== 'all' && it.group !== state.group) return false;
-  if (state.status === 'online' && it.status !== 'ok') return false;
-  if (state.status === 'offline' && !(it.status === 'bad' || it.status === 'blocked')) return false;
+  if (state.group !== 'all' && it._group !== state.group) return false;
+  if (state.status === 'online' && it._status !== 'ok') return false;
+  if (state.status === 'offline' && !(it._status === 'bad' || it._status === 'blocked')) return false;
   if (!state.keyword) return true;
-  return haystack(it).indexOf(state.keyword) !== -1;
+  return it._hay.indexOf(state.keyword) !== -1;
 }
 
 function render(){
   var rows = DATA.items.filter(matched).sort(function(a, b){
     var d = rank(a) - rank(b);
     if (d) return d;
-    if (a.weight !== b.weight) return a.weight - b.weight;   // 有权重：升序
-    return a.rand - b.rand;                                  // 无权重：随机混排
+    if (a._weight !== b._weight) return a._weight - b._weight;   // 有权重：升序
+    return a._rand - b._rand;                                    // 无权重：随机混排
   });
 
-  var pin = null;
-  if (state.pinId){
-    for (var i = 0; i < rows.length; i++){
-      if (rows[i].id === state.pinId){ pin = rows.splice(i, 1)[0]; break; }
-    }
+  // 首条只是排在第一，不做任何视觉区分
+  if (state.pinIdx >= 0){
+    var pin = DATA.items[state.pinIdx];
+    var pos = rows.indexOf(pin);
+    if (pos > 0){ rows.splice(pos, 1); rows.unshift(pin); }
   }
 
-  var html = pin ? cardHtml(pin, true) : '';
-  html += rows.map(function(it){ return cardHtml(it, false); }).join('');
+  var html = rows.map(cardHtml).join('');
   if (!html){
     html = '<div class="empty"><span class="big">∅</span>没有匹配的接口<br>' +
            '<span style="font-size:12px;opacity:.7">换个分组或清空搜索，也可以点「重新检测」</span></div>';
@@ -977,8 +1072,8 @@ function render(){
 function updateCounts(){
   var on = 0, off = 0;
   DATA.items.forEach(function(it){
-    if (it.status === 'ok') on++;
-    else if (it.status === 'bad' || it.status === 'blocked') off++;
+    if (it._status === 'ok') on++;
+    else if (it._status === 'bad' || it._status === 'blocked') off++;
   });
   el('nOnline').textContent = on;
   el('nOffline').textContent = off;
@@ -990,35 +1085,30 @@ function updateCounts(){
 
 /* ================= 局部更新 ================= */
 function patchUrl(uid){
-  var it = null, u = null;
-  for (var i = 0; i < DATA.items.length && !u; i++){
-    var us = DATA.items[i].urls;
-    for (var j = 0; j < us.length; j++){
-      if (us[j].uid === uid){ it = DATA.items[i]; u = us[j]; break; }
-    }
-  }
+  var p = uid.split('#');
+  var it = DATA.items[+p[0]], u = it && it._urls[+p[1]];
   if (!u) return;
 
   var li = listEl.querySelector('li[data-uid="' + uid + '"]');
   if (li){
     var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
             : u.status === 'checking' ? 'ing'
-            : (u.status === 'bad' || u.status === 'blocked') ? 'bad' : '';
+            : u.status === 'blocked' ? 'mid'
+            : u.status === 'bad' ? 'bad' : '';
     li.querySelector('.dot').className = 'dot ' + cls;
     var lat = li.querySelector('.lat');
     lat.className = 'lat' + (cls ? ' ' + cls : '');
     lat.textContent = u.status === 'ok' ? (u.lat + ' ms')
                     : u.status === 'checking' ? '…'
-                    : u.status === 'bad' ? '离线'
-                    : u.status === 'blocked' ? '受限' : '—';
+                    : u.status === 'blocked' ? '受限'
+                    : u.status === 'bad' ? '离线' : '—';
 
     var card = li.closest('.card');
     if (card){
       itemStatus(it);
-      var sm = statusMeta(it.status, it.lat);
+      var sm = statusMeta(it);
       var st = card.querySelector('.st');
-      st.className = 'st ' + sm.cls;
-      st.textContent = sm.text;
+      if (st){ st.className = 'st ' + sm.cls; st.textContent = sm.text; }
     }
   }
   itemStatus(it);
@@ -1031,10 +1121,9 @@ function noCache(url){
 }
 
 /*
-  检测口径：只要服务器有响应就算在线，不校验返回内容。
-  TVBox 才带特定 UA/环境，浏览器拿到的 403 / 404 / 错误页 / 图片都是正常现象，
-  因此这里只判断「连得上、有响应」，no-cors 拿到 opaque 响应即视为成功。
-  拿到响应就立刻 abort，不下载正文，延时等于首字节时间。
+  判定口径：服务器有响应即视为有效，不校验返回内容。
+  浏览器拿到的 403 / 404 / 错误页 / 图片都算有响应，实际解析以 TVBox 内为准。
+  收到响应立刻 abort，不下载正文，延时即首字节时间。
 */
 function probe(url){
   // https 页面请求 http 目标会被浏览器当作混合内容拦截
@@ -1050,7 +1139,7 @@ function probe(url){
   }).then(function(){
     clearTimeout(timer);
     var lat = Math.round(performance.now() - t0);
-    try { ctrl.abort(); } catch(e){}   // 有响应即可，立刻断开，省流量
+    try { ctrl.abort(); } catch(e){}
     return { ok: true, lat: lat };
   }).catch(function(){
     clearTimeout(timer);
@@ -1068,8 +1157,8 @@ function startCheck(){
 
   var queue = [];
   DATA.items.forEach(function(it){
-    it.urls.forEach(function(u){ u.status = 'wait'; u.lat = null; queue.push({ it: it, u: u }); });
-    it.status = 'wait'; it.lat = null;
+    it._urls.forEach(function(u){ u.status = 'wait'; u.lat = null; queue.push({ it: it, u: u }); });
+    it._status = 'wait'; it._lat = null;
   });
   render();
 
@@ -1103,7 +1192,7 @@ function startCheck(){
     state.detecting = false;
     btn.disabled = false;
     btn.textContent = '⟳ 重新检测';
-    var on = DATA.items.filter(function(x){ return x.status === 'ok'; }).length;
+    var on = DATA.items.filter(function(x){ return x._status === 'ok'; }).length;
     setProgress('检测完成 · 在线 ' + on + ' / ' + DATA.items.length, false);
     render();   // 在线 → 权重 → 随机
   });
@@ -1149,15 +1238,6 @@ el('btnOffline').addEventListener('click', function(){
 el('btnRecheck').addEventListener('click', startCheck);
 
 listEl.addEventListener('click', function(e){
-  if (e.target.id === 'btnReroll'){
-    state.seed = newSeed();
-    DATA.items.forEach(function(it){ it.rand = hash(it.id, state.seed); });
-    pickPin();
-    render();
-    var c = listEl.querySelector('.card.pin');
-    if (c){ c.classList.add('flash'); setTimeout(function(){ c.classList.remove('flash'); }, 700); }
-    return;
-  }
   var cp = e.target.closest('.cp');
   if (!cp) return;
   e.preventDefault();
@@ -1196,8 +1276,8 @@ el('mask').addEventListener('click', closeDrawer);
 
 function apply(raw){
   RAW = raw;
-  state.seed = newSeed();          // 每次加载/应用都换一个随机种子
-  DATA = normalize(raw);           // 归一化时按新种子算好随机排序值
+  state.seed = newSeed();          // 每次加载 / 应用都换一个随机种子
+  DATA = normalize(raw);
   renderHead(); renderGroups(); pickPin(); render();
 }
 
