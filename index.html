@@ -204,7 +204,6 @@ body{
 <div class="toast" id="toast"></div>
 
 <script id="DATA" type="application/json">
-
 {
   "version": 3,
   "site": {
@@ -225,9 +224,19 @@ body{
     { "id": "download", "name": "下载", "isApi": false },
     { "id": "other", "name": "其他", "isApi": false, "res": true }
   ],
-  "weights": {    "轮替占位": 1, "神马都没有": 2, "饭太硬": 4, "肥猫": 5,
-    "摸鱼": 6, "王二小": 7, "集多": 8, "潇洒": 9, "小米": 10,
-    "嗷呜": 11, "南风": 12, "幸福年年": 13
+  "weights": {
+    "轮替占位": 1,
+    "神马都没有": 2,
+    "饭太硬": 4,
+    "肥猫": 5,
+    "摸鱼": 6,
+    "王二小": 7,
+    "集多": 8,
+    "潇洒": 9,
+    "小米": 10,
+    "嗷呜": 11,
+    "南风": 12,
+    "幸福年年": 13
   },
   "rotate": {
     "keywords": [
@@ -237,9 +246,6 @@ body{
     "randomRange": 10000
   },
   "items": [
-    {
-    
-
   {
     "name": "裤佬线路",
     "desc": "",
@@ -844,12 +850,8 @@ body{
       "https://www.wya6.cn/tv/yc.json"
     ]
   }
-
-    
-    }
   ]
 }
-
 </script>
 
 <script>
@@ -1463,8 +1465,17 @@ body{
     render();
   }
 
-  apply(JSON.parse(DEFAULT_JSON));
-  setTimeout(startCheck, 350);
+  /* ✅ 关键修复：JSON.parse 容错，出错时页面显示提示而不是白屏 */
+  try {
+    apply(JSON.parse(DEFAULT_JSON));
+    setTimeout(startCheck, 350);
+  } catch (err) {
+    console.error('[DATA JSON 解析失败]', err);
+    listEl.innerHTML =
+      '<div class="empty"><span class="big">⚠</span>数据解析失败<br>' +
+      '<span style="font-size:12px;opacity:.75">' + esc(err.message) + '</span></div>';
+    setProgress('数据错误', false);
+  }
 })();
 </script>
 </body>
