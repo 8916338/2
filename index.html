@@ -13,9 +13,8 @@
     items[]            条目本身（name / desc / group / tags / source / urls…）
                        type 决定模板：api（默认）/ download / link / media
                        下载、快链条目用单数 url + icon + 可选 version
-    render.types{}     卡片模板：一组 blocks，按顺序渲染
-                       块：header / text / group / tags / sources / urls /
-                           image / links / row（行式卡片，参数见 drawer 说明）
+    卡片模板内置在 JS 的 RENDER 里，JSON 只需给条目写 type：
+                       api（默认）/ download / link / media
   改数据两种方式：
     1) 直接改 DATA 里的 JSON
     2) 点右上角「{ } 数据」→ 粘贴 / 导入 tvbox-data.json → 应用
@@ -122,6 +121,7 @@ body{
 .st.ok{color:var(--ok);background:var(--ok-soft)}
 .st.mid{color:var(--warn);background:var(--warn-soft)}
 .st.bad{color:var(--off);background:var(--off-soft)}
+.st.wt{color:var(--dim2);background:var(--off-soft)}
 .card .desc{margin:5px 0 0;color:var(--dim);font-size:12.5px;line-height:1.6}
 .meta-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px}
 .gtag{font-size:11px;border-radius:5px;padding:1.5px 7px;background:var(--acc-soft);color:var(--acc);font-weight:600;white-space:nowrap}
@@ -177,12 +177,14 @@ body{
 .dot.ok{background:var(--ok)}
 .dot.mid{background:var(--warn)}
 .dot.bad{background:var(--off)}
+.dot.wt{background:transparent;box-shadow:inset 0 0 0 1px var(--dim2)}
 .dot.ing{background:var(--acc);animation:pulse 1.2s infinite}
 .urls .u{flex:1;min-width:0;color:var(--fg);text-decoration:none;opacity:.9;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
 .urls .u:hover{color:var(--acc);opacity:1}
 .urls .lat{flex:none;font-size:11.5px;color:var(--dim2);font-variant-numeric:tabular-nums;min-width:46px;text-align:right}
 .urls .lat.ok{color:var(--ok);font-weight:600}
 .urls .lat.mid{color:var(--warn);font-weight:600}
+.urls .lat.wt{color:var(--dim2)}
 .cp{flex:none;border:1px solid var(--line);background:var(--card);color:var(--dim);font-size:11px;border-radius:6px;padding:3px 8px;cursor:pointer;transition:.15s;font-family:inherit}
 .cp:hover{color:var(--acc);border-color:var(--acc)}
 .cp.ok{color:var(--ok);border-color:var(--ok)}
@@ -243,7 +245,7 @@ body{
 
   <div class="toolbar">
     <div class="row">
-      <button class="btn primary" id="btnRecheck">⟳ 重新检测</button>
+      <button class="btn primary" id="btnRecheck" title="https 页面无法直连 http 接口，会把这类条目置为「待测」；用本地文件打开或部署到 http 站点即可完整检测">⟳ 重新检测</button>
       <button class="btn" id="btnOnline">在线 <span class="n" id="nOnline">0</span></button>
       <button class="btn" id="btnOffline">离线 <span class="n" id="nOffline">0</span></button>
       <div class="progress" id="progress"></div>
@@ -275,13 +277,9 @@ body{
     <div class="hint">
       条目字段：<code>name</code> · <code>desc</code> · <code>group</code> · <code>tags</code> ·
       <code>source</code> <code>[{name,url}]</code> · <code>urls</code> <code>["…"]</code>；
-      <code>type</code> 决定用哪套模板（缺省 <code>api</code>，另有 <code>download</code> / <code>link</code> / <code>media</code>）；
-      下载与快链条目用单数 <code>url</code> + <code>icon</code> + 可选 <code>version</code>，同样参与检测与排序。<br>
-      卡片模板在 <code>render.types</code> 里定义，<code>blocks</code> 按顺序渲染，可用块：
-      <code>header / text / group / tags / sources / urls / image / links / row</code>。
-      <code>row</code> 是行式卡片（图标 + 标题 + 版本 + 描述 + 按钮），
-      参数 <code>title / icon / meta / desc / url / action / kind / download</code>。
-      新增样式只加一组 blocks，不必改 HTML。
+      <code>type</code> 决定用哪套卡片（缺省 <code>api</code>，另有 <code>download</code> / <code>link</code> / <code>media</code>）；
+      下载与快链条目用单数 <code>url</code> + <code>icon</code> + 可选 <code>version</code>，同样参与检测与排序。
+      增删条目只改这个 JSON，卡片样式已内置在页面里。
     </div>
     <textarea id="jsonBox" spellcheck="false"></textarea>
     <div class="hint">也可以点「导入文件」，选中 <code>tvbox-data.json</code> 后点「应用」。</div>
@@ -391,101 +389,6 @@ body{
     ],
     "seed": "time-random",
     "randomRange": 10000
-  },
-  "render": {
-    "default": "api",
-    "types": {
-      "api": {
-        "blocks": [
-          {
-            "as": "header",
-            "field": "name"
-          },
-          {
-            "as": "text",
-            "field": "desc"
-          },
-          {
-            "as": "group",
-            "inline": true
-          },
-          {
-            "as": "tags",
-            "field": "tags",
-            "inline": true
-          },
-          {
-            "as": "sources",
-            "field": "source",
-            "inline": true
-          },
-          {
-            "as": "urls",
-            "field": "urls"
-          }
-        ]
-      },
-      "download": {
-        "class": "dl",
-        "blocks": [
-          {
-            "as": "row",
-            "kind": "dl",
-            "title": "name",
-            "icon": "icon",
-            "meta": "version",
-            "desc": "desc",
-            "url": "url",
-            "action": "下载"
-          }
-        ]
-      },
-      "link": {
-        "class": "lk",
-        "blocks": [
-          {
-            "as": "row",
-            "kind": "lk",
-            "title": "name",
-            "icon": "icon",
-            "meta": "version",
-            "desc": "desc",
-            "url": "url",
-            "action": "前往"
-          }
-        ]
-      },
-      "media": {
-        "class": "media",
-        "blocks": [
-          {
-            "as": "header",
-            "field": "name",
-            "status": false,
-            "logo": true
-          },
-          {
-            "as": "image",
-            "field": "cover",
-            "class": "cover"
-          },
-          {
-            "as": "text",
-            "field": "desc"
-          },
-          {
-            "as": "tags",
-            "field": "tags",
-            "inline": true
-          },
-          {
-            "as": "links",
-            "field": "links",
-            "inline": true
-          }
-        ]
-      }
-    }
   },
   "items": [
     {
@@ -970,8 +873,56 @@ function asList(v){
   return (Array.isArray(v) ? v : [v]).filter(function(x){ return x && (x.name || x.url); });
 }
 
+/* ================= 卡片模板（内置，不在 JSON 里） =================
+   条目用 "type" 选模板：api（默认）/ download / link / media。
+   blocks 按顺序渲染，可用块：
+     header  text  group  tags  sources  urls  image  links  row
+   row（行式卡片）参数：
+     title 图标旁标题字段 / icon 图标字段 / meta 徽标字段 / desc 描述字段
+     url 链接字段 / action 按钮文案 / kind 样式(dl|lk) / download 是否加下载属性
+   ================================================================ */
+var RENDER = {
+  default: 'api',
+  types: {
+    api: {
+      blocks: [
+        { as: 'header', field: 'name' },
+        { as: 'text', field: 'desc' },
+        { as: 'group', inline: true },
+        { as: 'tags', field: 'tags', inline: true },
+        { as: 'sources', field: 'source', inline: true },
+        { as: 'urls', field: 'urls' }
+      ]
+    },
+    download: {
+      class: 'dl',
+      blocks: [
+        { as: 'row', kind: 'dl', title: 'name', icon: 'icon',
+          meta: 'version', desc: 'desc', url: 'url', action: '下载' }
+      ]
+    },
+    link: {
+      class: 'lk',
+      blocks: [
+        { as: 'row', kind: 'lk', title: 'name', icon: 'icon',
+          meta: 'version', desc: 'desc', url: 'url', action: '前往' }
+      ]
+    },
+    media: {
+      class: 'media',
+      blocks: [
+        { as: 'header', field: 'name', status: false, logo: true },
+        { as: 'image', field: 'cover', class: 'cover' },
+        { as: 'text', field: 'desc' },
+        { as: 'tags', field: 'tags', inline: true },
+        { as: 'links', field: 'links', inline: true }
+      ]
+    }
+  }
+};
+
 function normalize(raw){
-  var render = raw.render || {};
+  var render = (raw.render && raw.render.types) ? raw.render : RENDER;
   var def = render.default || 'default';
 
   var gs = (raw.groups || []).map(function(g, i){
@@ -1073,24 +1024,23 @@ function renderGroups(){
 
 /* ================= 状态 ================= */
 function itemStatus(it){
-  var best = null, checking = false, blocked = false, allDown = it._urls.length > 0;
+  var best = null, checking = false, unknown = false, allDown = it._urls.length > 0;
   it._urls.forEach(function(u){
     if (u.status === 'ok' && (best === null || u.lat < best)) best = u.lat;
     if (u.status === 'checking') checking = true;
-    if (u.status === 'blocked') blocked = true;
-    if (u.status !== 'bad' && u.status !== 'blocked') allDown = false;
+    if (u.status === 'unknown') unknown = true;
+    if (u.status !== 'bad' && u.status !== 'unknown') allDown = false;
   });
   if (best !== null){ it._status = 'ok'; it._lat = best; return; }
   if (checking){ it._status = 'wait'; it._lat = null; return; }
-  if (allDown){ it._status = blocked ? 'blocked' : 'bad'; it._lat = null; return; }
+  if (allDown){ it._status = unknown ? 'unknown' : 'bad'; it._lat = null; return; }
   it._status = 'wait'; it._lat = null;
 }
 
-// 受限沿用延时样式（琥珀色），与离线的灰色区分
 function statusMeta(it){
   if (it._status === 'ok') return { cls: it._lat >= SLOW_MS ? 'mid' : 'ok', text: it._lat + ' ms' };
-  if (it._status === 'blocked') return { cls: 'mid', text: '受限' };
   if (it._status === 'bad') return { cls: 'bad', text: '离线' };
+  if (it._status === 'unknown') return { cls: 'wt', text: '待测' };
   return { cls: 'wait', text: '待检测' };
 }
 
@@ -1166,15 +1116,16 @@ function blockHtml(it, b){
       return '<ul class="urls">' + it._urls.map(function(u){
         var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
                 : u.status === 'checking' ? 'ing'
-                : u.status === 'blocked' ? 'mid'
-                : u.status === 'bad' ? 'bad' : '';
+                : u.status === 'bad' ? 'bad'
+                : u.status === 'unknown' ? 'wt' : '';
         var lat = u.status === 'ok' ? (u.lat + ' ms')
                 : u.status === 'checking' ? '…'
-                : u.status === 'blocked' ? '受限'
-                : u.status === 'bad' ? '离线' : '—';
+                : u.status === 'bad' ? '离线'
+                : u.status === 'unknown' ? '待测' : '—';
         return '<li data-uid="' + esc(u.uid) + '">' +
           '<span class="dot ' + cls + '"></span>' +
-          '<a class="u" href="' + esc(u.url) + '" target="_blank" rel="noopener" title="' + esc(u.url) + '">' + esc(showUrl(u.url)) + '</a>' +
+          '<a class="u" href="' + esc(u.url) + '" target="_blank" rel="noopener" title="' +
+            esc(u.url) + (u.status === 'unknown' ? '\n\nhttps 页面无法直连 http 接口，用本地文件打开或部署到 http 站点即可完整检测' : '') + '">' + esc(showUrl(u.url)) + '</a>' +
           '<span class="lat' + (cls ? ' ' + cls : '') + '">' + lat + '</span>' +
           '<button class="cp" data-url="' + esc(u.url) + '">复制</button>' +
         '</li>';
@@ -1210,15 +1161,15 @@ function cardHtml(it){
 
 /* ================= 排序 / 过滤 ================= */
 function rank(it){
-  if (it._status === 'ok') return 0;                              // 在线
-  if (it._status === 'bad' || it._status === 'blocked') return 2;  // 离线 / 受限
+  if (it._status === 'ok') return 0;                               // 在线
+  if (it._status === 'bad' || it._status === 'unknown') return 2;   // 离线 / 待测
   return 1;                                                        // 待检测
 }
 
 function matched(it){
   if (state.group !== 'all' && it._group !== state.group) return false;
   if (state.status === 'online' && it._status !== 'ok') return false;
-  if (state.status === 'offline' && !(it._status === 'bad' || it._status === 'blocked')) return false;
+  if (state.status === 'offline' && !(it._status === 'bad' || it._status === 'unknown')) return false;
   if (!state.keyword) return true;
   return it._hay.indexOf(state.keyword) !== -1;
 }
@@ -1251,7 +1202,7 @@ function updateCounts(){
   var on = 0, off = 0;
   DATA.items.forEach(function(it){
     if (it._status === 'ok') on++;
-    else if (it._status === 'bad' || it._status === 'blocked') off++;
+    else if (it._status === 'bad' || it._status === 'unknown') off++;
   });
   el('nOnline').textContent = on;
   el('nOffline').textContent = off;
@@ -1271,15 +1222,15 @@ function patchUrl(uid){
   if (li){
     var cls = u.status === 'ok' ? (u.lat >= SLOW_MS ? 'mid' : 'ok')
             : u.status === 'checking' ? 'ing'
-            : u.status === 'blocked' ? 'mid'
-            : u.status === 'bad' ? 'bad' : '';
+            : u.status === 'bad' ? 'bad'
+            : u.status === 'unknown' ? 'wt' : '';
     li.querySelector('.dot').className = 'dot ' + cls;
     var lat = li.querySelector('.lat');
     lat.className = 'lat' + (cls ? ' ' + cls : '');
     lat.textContent = u.status === 'ok' ? (u.lat + ' ms')
                     : u.status === 'checking' ? '…'
-                    : u.status === 'blocked' ? '受限'
-                    : u.status === 'bad' ? '离线' : '—';
+                    : u.status === 'bad' ? '离线'
+                    : u.status === 'unknown' ? '待测' : '—';
 
     var card = li.closest('.card');
     if (card){
@@ -1293,35 +1244,63 @@ function patchUrl(uid){
   updateCounts();
 }
 
-/* ================= 检测 ================= */
+/* ================= 检测 =================
+   判定口径：服务器有响应即有效，不校验返回内容（403/404/图片/错误页都算在线）。
+   拿到响应立刻 abort，不下载正文，延时即首字节时间。
+   浏览器限制：https 页面不能直连 http 资源（混合内容拦截）。
+   这时依次尝试 https 等价地址 → CORS 代理，全部失败标为「待测」，
+   由用户用本地文件打开（file://）即可完整检测。
+   ========================================= */
+var PROXY_TIMEOUT = 6000;
+// 可选：自己的探测端点，{url} 会被替换为已编码的目标地址。
+// 公共免费代理不稳定，默认留空；填入后 https 页面下会多一层兜底。
+// 例：['https://your-server.com/check?url={url}']
+var PROXIES = [];
+
 function noCache(url){
   return url + (url.indexOf('?') === -1 ? '?' : '&') + '_t=' + Date.now();
 }
 
-/*
-  判定口径：服务器有响应即视为有效，不校验返回内容。
-  浏览器拿到的 403 / 404 / 错误页 / 图片都算有响应，实际解析以 TVBox 内为准。
-  收到响应立刻 abort，不下载正文，延时即首字节时间。
-*/
-function probe(url){
-  // https 页面请求 http 目标会被浏览器当作混合内容拦截
-  if (location.protocol === 'https:' && /^http:\/\//i.test(url)) return Promise.resolve({ blocked: true });
-
+function timedFetch(target, ms, mode){
   var ctrl = new AbortController();
   var t0 = performance.now();
-  var timer = setTimeout(function(){ ctrl.abort(); }, TIMEOUT_MS);
-
-  return fetch(noCache(url), {
-    method: 'GET', mode: 'no-cors', cache: 'no-store', redirect: 'follow',
+  var timer = setTimeout(function(){ ctrl.abort(); }, ms);
+  return fetch(target, {
+    method: 'GET', mode: mode || 'no-cors', cache: 'no-store', redirect: 'follow',
     credentials: 'omit', referrerPolicy: 'no-referrer', signal: ctrl.signal
-  }).then(function(){
+  }).then(function(resp){
     clearTimeout(timer);
     var lat = Math.round(performance.now() - t0);
+    var status = (mode === 'cors') ? resp.status : 0;
     try { ctrl.abort(); } catch(e){}
-    return { ok: true, lat: lat };
+    return { ok: true, lat: lat, status: status };
   }).catch(function(){
     clearTimeout(timer);
     return { ok: false };
+  });
+}
+
+function probe(url){
+  // 同协议（file:// / http 页面 / https 目标）直接请求
+  if (!(location.protocol === 'https:' && /^http:\/\//i.test(url))){
+    return timedFetch(noCache(url), TIMEOUT_MS);
+  }
+
+  // https 页面测 http 目标：先试 https 等价，再走代理
+  var alt = 'https://' + url.slice('http://'.length);
+  return timedFetch(noCache(alt), 5000).then(function(r){
+    if (r.ok) return r;
+    return viaProxy(url, 0);
+  });
+}
+
+function viaProxy(url, i){
+  if (i >= PROXIES.length) return Promise.resolve({ unknown: true });
+  var target = PROXIES[i].replace('{url}', encodeURIComponent(url));
+  return timedFetch(target, PROXY_TIMEOUT, 'cors').then(function(r){
+    // 代理自身的鉴权 / 限流不算目标可达
+    if (r.ok && r.status !== 401 && r.status !== 403 && r.status !== 407 && r.status !== 429) return r;
+    return viaProxy(url, i + 1);
   });
 }
 
@@ -1354,7 +1333,7 @@ function startCheck(){
     patchUrl(job.u.uid);
     return probe(job.u.url).then(function(r){
       if (state.abort) return;
-      job.u.status = r.blocked ? 'blocked' : (r.ok ? 'ok' : 'bad');
+      job.u.status = r.ok ? 'ok' : (r.unknown ? 'unknown' : 'bad');
       job.u.lat = r.ok ? r.lat : null;
       state.done++;
       patchUrl(job.u.uid);
@@ -1371,7 +1350,10 @@ function startCheck(){
     btn.disabled = false;
     btn.textContent = '⟳ 重新检测';
     var on = DATA.items.filter(function(x){ return x._status === 'ok'; }).length;
-    setProgress('检测完成 · 在线 ' + on + ' / ' + DATA.items.length, false);
+    var un = 0;
+    DATA.items.forEach(function(x){ x._urls.forEach(function(u){ if (u.status === 'unknown') un++; }); });
+    setProgress('检测完成 · 在线 ' + on + ' / ' + DATA.items.length +
+      (un ? ' · ' + un + ' 待测' : ''), false);
     render();   // 在线 → 权重 → 随机
   });
 }
