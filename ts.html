@@ -229,7 +229,8 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
 .gq-step.on{display:flex;animation:gqFade .22s ease}
 
 .gq-head{padding:22px 20px 4px;text-align:center;flex:0 0 auto}
-.gq-ico{display:block;font-size:42px;line-height:1;margin-bottom:10px;animation:gqBounce 2.2s infinite}
+.gq-ico{display:block;font-size:42px;line-height:1;margin-bottom:10px;animation:gqBounce 2.2s infinite;
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","EmojiOne Color",sans-serif}
 @keyframes gqBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .gq-title{font-size:16.5px;font-weight:700;color:#0a1a2b;letter-spacing:.2px}
 
@@ -275,6 +276,20 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
 .gq-qr{display:block;width:188px;height:auto;margin:8px auto 0;border-radius:12px;border:1px solid #e8eaee;background:#fff}
 .gq-mono{font-variant-numeric:tabular-nums}
 
+/* 感谢页 QQ 提示 */
+.gq-qq{
+  margin-top:11px;padding:8px 10px;border-radius:9px;background:#fff8f5;
+  border:1px dashed #ffcdbd;font-size:11.5px;color:#8a5a4a;line-height:1.75;
+}
+.gq-qq b{color:#e64a19;font-weight:700;letter-spacing:.3px}
+
+/* 弹窗频率提示（每页底部小字） */
+.gq-freq{
+  margin-top:13px;font-size:10.5px;color:#9aa3b2;
+  letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.gq-freq::before,.gq-freq::after{content:'';width:16px;height:1px;background:#e2e6ec}
+
 /* ---------- 调试面板 ---------- */
 .gq-dbg{position:fixed;right:14px;bottom:14px;z-index:9500}
 .gq-dbg-fab{
@@ -302,6 +317,7 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
 }
 .gq-dbg-grid button:hover{border-color:#e64a19;color:#e64a19;background:#fff8f5}
 .gq-dbg-grid button.primary{grid-column:1/-1;background:#171a1f;color:#fff;border-color:#171a1f}
+.gq-dbg-grid button.wide{grid-column:1/-1}
 .gq-dbg-path{font-size:11px;color:#6b7280;line-height:1.75;border-top:1px dashed #e8eaee;padding-top:8px}
 .gq-dbg-path code{background:#f1f3f6;border-radius:4px;padding:0 4px;font-size:10.5px;color:#3b4655}
 .gq-dbg-warn{margin-top:8px;font-size:10.5px;color:#b45309;background:#fef6e7;border-radius:6px;padding:6px 8px;line-height:1.6}
@@ -389,8 +405,8 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       </div>
     </section>
 
-    <!-- 风险简版：第 2、3 次弹窗先用这一页 -->
-    <section class="gq-step" id="gq-s3" data-cd="3">
+    <!-- 简略警告：仅第二批次第 1 次出现，不设阅读等待 -->
+    <section class="gq-step" id="gq-s3">
       <div class="gq-head">
         <span class="gq-ico">🛡️</span>
         <div class="gq-title">风险提醒</div>
@@ -400,10 +416,10 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
         <div class="gq-item red"><span class="dot">●</span><span><b>接口仍由爬虫采集。</b>来源第三方、非人工审核，可用性与安全性不作任何保证。</span></div>
         <div class="gq-item amber"><span class="dot">●</span><span><b>请勿违规使用。</b>禁止用于传播违法信息、侵犯他人知识产权或绕过合法订阅付费。</span></div>
         <div class="gq-item blue"><span class="dot">●</span><span><b>风险自负。</b>本应用为本地网页，一切使用后果由你自行承担，与开发者无关。</span></div>
-        <div class="gq-note">你已多次打开本站，说明你已了解上述风险。这次只做简要提醒。</div>
+        <div class="gq-note">详细的风险与法律提示，已在首次打开时完整告知。这次只做简要提醒。</div>
       </div>
       <div class="gq-foot">
-        <button class="gq-btn" data-cdbtn onclick="GQ.next()">我已了解，继续</button>
+        <button class="gq-btn" onclick="GQ.next()">我已了解，继续</button>
       </div>
     </section>
 
@@ -421,11 +437,11 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       </div>
       <div class="gq-foot">
         <button class="gq-btn" onclick="GQ.next()">请我喝一杯 ☕</button>
-        <button class="gq-btn sec" onclick="GQ.finish()">先不用了，继续白嫖</button>
+        <button class="gq-btn sec" onclick="GQ.reject()">先不用了，继续白嫖</button>
       </div>
     </section>
 
-    <!-- 二维码页 -->
+    <!-- 赞助 · 感谢页 -->
     <section class="gq-step" id="gq-s5">
       <div class="gq-head">
         <span class="gq-ico">❤️</span>
@@ -434,10 +450,28 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       <div class="gq-body">
         <p style="font-size:12.5px;font-weight:600;color:#e64a19;margin-bottom:8px">微信扫码，随缘即可</p>
         <img class="gq-qr" id="gqQr" alt="微信赞赏二维码">
-        <p style="font-size:11.5px;color:#8b9eb0;margin-top:10px;line-height:1.7">你的每一次赞赏，<br>都是这个小站继续搬运和维护的底气。</p>
+        <div class="gq-qq">凭赞助截图加 Q：<b id="gqQq">—</b><br>有资源优先分享给你</div>
+        <p class="gq-freq">弹窗频率：每月 3 次</p>
       </div>
       <div class="gq-foot">
         <button class="gq-btn" onclick="GQ.finish()">完成并关闭</button>
+      </div>
+    </section>
+
+    <!-- 拒绝赞助 · 理解页 -->
+    <section class="gq-step" id="gq-s6">
+      <div class="gq-head">
+        <span class="gq-ico">🙏</span>
+        <div class="gq-title">完全理解</div>
+      </div>
+      <div class="gq-body">
+        <p>不打赏真的没关系，白嫖本来就是本站的初衷。</p>
+        <p style="margin-top:14px">这个站会继续免费开放，接口照旧更新，<br>功能一分不少。</p>
+        <p style="font-size:11.5px;color:#8b9eb0;margin-top:16px;line-height:1.7">哪天心情好、手头宽裕了，<br>再回来请我喝一杯也不迟 🙂</p>
+        <p class="gq-freq">弹窗频率：每月 3 次</p>
+      </div>
+      <div class="gq-foot">
+        <button class="gq-btn" onclick="GQ.finish()">继续使用</button>
       </div>
     </section>
 
@@ -450,19 +484,22 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     <div class="gq-dbg-h">弹窗调试 <span>· 上线后请关闭</span></div>
     <div class="gq-dbg-kv" id="gqDbgKv"></div>
     <div class="gq-dbg-grid">
-      <button data-act="s1">第 1 次 · 风险</button>
-      <button data-act="s2">第 2 次 · 风险+赞助</button>
-      <button data-act="s3">第 3 次 · 全流程</button>
-      <button data-act="month">间隔一月批次</button>
-      <button class="primary" data-act="reset">重置全部状态</button>
-      <button data-act="hide">隐藏调试按钮</button>
+      <button data-act="first">首批 · 两页警告</button>
+      <button data-act="b2n1">二批第1次 · 简略+赞助</button>
+      <button data-act="b2n2">二批第2次 · 纯赞助</button>
+      <button data-act="b2n3">二批第3次 · 纯赞助</button>
+      <button data-act="month">每月批次 · 纯赞助</button>
+      <button data-act="reset">重置全部状态</button>
+      <button class="wide" data-act="hide">隐藏调试按钮</button>
     </div>
     <div class="gq-dbg-path">
       <div><b>弹窗路径</b></div>
-      <div>首次 <code>风险①→风险②→完成</code></div>
-      <div>本批第 2 次 <code>简版→赞助→完成</code></div>
-      <div>本批第 3 次 <code>简版→赞助→二维码→完成</code></div>
-      <div>下批第 1 次 <code>简版→赞助</code>（7 天后 / 之后每月）</div>
+      <div>首批 <code>警告①→警告②</code> 各等 5 秒 · 仅 1 次</div>
+      <div>7 天后 第1次 <code>简略警告→赞助→感谢</code></div>
+      <div>　　　 第2次 <code>赞助→感谢</code></div>
+      <div>　　　 第3次 <code>赞助→感谢</code></div>
+      <div>每月 3 次 <code>赞助→感谢</code> · 不再警告</div>
+      <div>拒绝赞助 <code>→理解页</code></div>
     </div>
     <div class="gq-dbg-warn">调试预览不写入真实进度。隐藏后恢复：控制台执行 <code>localStorage.removeItem('gq_dbg_off')</code></div>
   </div>
@@ -472,12 +509,17 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
 <script>
 /* ==========================================================================
    风险 / 赞助弹窗 · 内联版
+
    规则：
-     1) 首次打开：立即弹「风险」(第 1 次)
-     2) 同一批次共 3 次，间隔 ≥ 1 小时；第 2 次起风险后接赞助，第 3 次再接二维码
-     3) 首批结束后 7 天开新一批；之后每 30 天一批，每批同样 3 次
-     4) 状态存 localStorage，只在本地，不上传
-   调试：把 DEBUG 改成 false，或点面板里的「隐藏调试按钮」
+     1) 首次载入 → 第一批次：两页完整风险警告，每页强制等待 5 秒，仅弹 1 次
+     2) 7 天后 → 第二批次：共 3 次，间隔 ≥ 1 小时
+          第 1 次：简略警告（不等待）→ 赞助 → 感谢
+          第 2、3 次：无警告，直接赞助 → 感谢
+     3) 之后每月一批，每批 3 次，不再警告，只弹赞助
+     4) 赞助流程最后一页标注「弹窗频率：每月 3 次」；拒绝赞助 → 理解页
+     5) 赞赏二维码 / QQ 号读 data.json 的 site.sponsor，读不到时用兜底图
+   状态只存 localStorage，不上传
+   调试：DEBUG 改 false，或点面板「隐藏调试按钮」
    ========================================================================== */
 (function () {
   'use strict';
@@ -487,24 +529,22 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
   var DBG_OFF_KEY = 'gq_dbg_off';
 
   var HOUR = 36e5, DAY = 864e5;
-  var BATCH_SIZE = 3;                     // 每批 3 次
+  var FIRST_BATCH_SIZE = 1;               // 首批只弹 1 次
+  var LATER_BATCH_SIZE = 3;               // 之后每批 3 次
   var GAP_MS = HOUR;                      // 批内间隔 ≥ 1 小时
-  var SECOND_BATCH_DELAY = 7 * DAY;       // 首批之后 7 天
-  var MONTH_DELAY = 30 * DAY;             // 之后每月一批
+  var SECOND_BATCH_DELAY = 7 * DAY;       // 首批 → 第二批：7 天
+  var MONTH_DELAY = 30 * DAY;             // 之后：每月一批
 
-  var QR_SRC = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjYiIGhlaWdodD0iMTU2IiB2aWV3Qm94PSIwIDAgMTI2IDE1NiI+PHJlY3Qgd2lkdGg9IjEyNiIgaGVpZ2h0PSIxNTYiIGZpbGw9IiNmZmZmZmYiLz48ZyBmaWxsPSIjMWEyYjNkIj48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNiIgeT0iMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTgiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIyNCIgeT0iMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjMwIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMzYiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIwIiB5PSI2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMzYiIHk9IjYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIwIiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyIiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjE4IiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjI0IiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjAiIHk9IjE4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTIiIHk9IjE4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTgiIHk9IjE4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMjQiIHk9IjE4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMzYiIHk9IjE4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMCIgeT0iMjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMiIgeT0iMjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxOCIgeT0iMjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIyNCIgeT0iMjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIzNiIgeT0iMjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIwIiB5PSIzMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSIzMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjAiIHk9IjM2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNiIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMiIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxOCIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIyNCIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIzMCIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIzNiIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI4NCIgeT0iMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjkwIiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iOTYiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMDIiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMDgiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMTQiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMjAiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI4NCIgeT0iNiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyMCIgeT0iNiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijg0IiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijk2IiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwMiIgeT0iMTIiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMDgiIHk9IjEyIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTIwIiB5PSIxMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijg0IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijk2IiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwMiIgeT0iMTgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMDgiIHk9IjE4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTIwIiB5PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijg0IiB5PSIyNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijk2IiB5PSIyNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwMiIgeT0iMjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMDgiIHk9IjI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTIwIiB5PSIyNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijg0IiB5PSIzMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyMCIgeT0iMzAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI4NCIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI5MCIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI5NiIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMDIiIHk9IjM2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTA4IiB5PSIzNiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjExNCIgeT0iMzYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMjAiIHk9IjM2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMCIgeT0iODQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI2IiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyIiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjE4IiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjI0IiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjMwIiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjAiIHk9IjkwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMzYiIHk9IjkwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMCIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMiIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxOCIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIyNCIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIzNiIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIwIiB5PSIxMDIiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMiIgeT0iMTAyIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTgiIHk9IjEwMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjI0IiB5PSIxMDIiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIzNiIgeT0iMTAyIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMCIgeT0iMTA4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTIiIHk9IjEwOCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjE4IiB5PSIxMDgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIyNCIgeT0iMTA4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMzYiIHk9IjEwOCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjAiIHk9IjExNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSIxMTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIwIiB5PSIxMjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI2IiB5PSIxMjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMiIgeT0iMTIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTgiIHk9IjEyMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjI0IiB5PSIxMjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIzMCIgeT0iMTIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMzYiIHk9IjEyMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjQ4IiB5PSIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNTQiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI0OCIgeT0iNiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjU0IiB5PSI2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjAiIHk9IjYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI2NiIgeT0iNiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjcyIiB5PSI2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjYiIHk9IjEyIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjAiIHk9IjE4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNDgiIHk9IjI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjAiIHk9IjI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNzIiIHk9IjI0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjAiIHk9IjMwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjYiIHk9IjMwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNzIiIHk9IjM2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjAiIHk9IjQyIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMCIgeT0iNDgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI2IiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyIiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjE4IiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjMwIiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjQyIiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjY2IiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijc4IiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijg0IiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijk2IiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwMiIgeT0iNDgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMTQiIHk9IjQ4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTIwIiB5PSI0OCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjAiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTIiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTgiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMzYiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNDIiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjAiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjYiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNzgiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iOTYiIHk9IjU0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTA4IiB5PSI1NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjExNCIgeT0iNTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI2IiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyIiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjYwIiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjY2IiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjcyIiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijc4IiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijk2IiB5PSI2MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSI2NiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjQyIiB5PSI2NiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjU0IiB5PSI2NiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjY2IiB5PSI2NiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijc4IiB5PSI2NiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijg0IiB5PSI2NiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEyMCIgeT0iNjYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI2IiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjI0IiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjMwIiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjM2IiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjU0IiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjY2IiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjcyIiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijc4IiB5PSI3MiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwMiIgeT0iNzIiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI0OCIgeT0iNzgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI1NCIgeT0iNzgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI4NCIgeT0iNzgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMjAiIHk9Ijc4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNTQiIHk9Ijg0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjAiIHk9Ijg0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjYiIHk9Ijg0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNzgiIHk9Ijg0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iODQiIHk9Ijg0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iOTYiIHk9Ijg0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iMTE0IiB5PSI4NCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjQ4IiB5PSI5MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjYwIiB5PSI5MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjcyIiB5PSI5MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjkwIiB5PSI5MCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjExNCIgeT0iOTAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI2MCIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI3MiIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI3OCIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI5NiIgeT0iOTYiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMjAiIHk9Ijk2IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNjYiIHk9IjEwMiIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijg0IiB5PSIxMDIiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI0OCIgeT0iMTA4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNTQiIHk9IjEwOCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijc4IiB5PSIxMDgiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI4NCIgeT0iMTA4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iOTAiIHk9IjEwOCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwMiIgeT0iMTA4IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNDgiIHk9IjExNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjYwIiB5PSIxMTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI3MiIgeT0iMTE0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iODQiIHk9IjExNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjkwIiB5PSIxMTQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSIxMDIiIHk9IjExNCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwOCIgeT0iMTE0IiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iNDgiIHk9IjEyMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9Ijc4IiB5PSIxMjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiLz48cmVjdCB4PSI4NCIgeT0iMTIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PHJlY3QgeD0iOTYiIHk9IjEyMCIgd2lkdGg9IjYiIGhlaWdodD0iNiIvPjxyZWN0IHg9IjEwOCIgeT0iMTIwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2Ii8+PC9nPjxyZWN0IHg9IjAiIHk9IjEyNiIgd2lkdGg9IjEyNiIgaGVpZ2h0PSIzMCIgZmlsbD0iI2ZmZjFlYyIvPjx0ZXh0IHg9IjYzLjAiIHk9IjE0NiIgZm9udC1zaXplPSIxMyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZpbGw9IiNlNjRhMTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiPuekuuS+i+WNoOS9jcK36K+35pu/5o2iPC90ZXh0Pjwvc3ZnPg==';  // ← 换成你的二维码：'vip/zsm.jpg'
-
-  /* 每次弹窗的页面流程 */
-  var FLOWS = {
-    1: ['s1', 's2'],
-    2: ['s3', 's4'],
-    3: ['s3', 's4', 's5']
+  /* 赞赏信息：优先读 data.json → site.sponsor，失败时用兜底 */
+  var SP = {
+    qr: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODgiIGhlaWdodD0iMTg4Ij48cmVjdCB3aWR0aD0iMTg4IiBoZWlnaHQ9IjE4OCIgZmlsbD0iI2Y3ZjhmYSIvPjxyZWN0IHg9Ii41IiB5PSIuNSIgd2lkdGg9IjE4NyIgaGVpZ2h0PSIxODciIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2U4ZWFlZSIvPjx0ZXh0IHg9Ijk0IiB5PSI5OCIgZm9udC1zaXplPSIxMyIgZmlsbD0iIzlhYTNiMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiPuS6jOe7tOeggeacqumFjee9rjwvdGV4dD48L3N2Zz4=',
+    qq: '—'
   };
 
   var flow = [], idx = 0, preview = false;
 
-  /* ---------- 状态 ---------- */
-  var mem = null;   // localStorage 不可用时（file:// / 隐私模式）的内存兜底
+  /* ---------------- 状态 ---------------- */
+  var mem = null;
 
   function load() {
     var s = null;
@@ -522,14 +562,29 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     mem = s;
     try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
   }
-  /* 下一批次可开启时间 */
+  function batchSize(s) {
+    return (s.batch || 1) <= 1 ? FIRST_BATCH_SIZE : LATER_BATCH_SIZE;
+  }
   function nextBatchAt(s) {
     if (!s.batchStartAt) return 0;
-    var gap = (s.batch <= 1) ? SECOND_BATCH_DELAY : MONTH_DELAY;
-    return s.batchStartAt + gap;
+    return s.batchStartAt + ((s.batch <= 1) ? SECOND_BATCH_DELAY : MONTH_DELAY);
   }
 
-  /* ---------- 展示 ---------- */
+  /* 决定这一次弹哪几页 */
+  function flowFor(s, n) {
+    if ((s.batch || 1) <= 1) return ['s1', 's2'];              // 首批：完整两页警告
+    if (s.batch === 2 && n === 1) return ['s3', 's4', 's5'];   // 二批首弹：简略警告 + 赞助
+    return ['s4', 's5'];                                       // 其余：纯赞助
+  }
+
+  /* ---------------- 渲染 ---------------- */
+  function paintSponsor() {
+    var img = document.getElementById('gqQr');
+    if (img && img.getAttribute('src') !== SP.qr) img.src = SP.qr;
+    var q = document.getElementById('gqQq');
+    if (q) q.textContent = SP.qq || '—';
+  }
+
   function startCd(btn, sec) {
     if (!btn) return;
     if (btn._t) clearInterval(btn._t);
@@ -554,19 +609,19 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     var el = document.getElementById('gq-' + id);
     if (!el) return;
     el.classList.add('on');
-    el.querySelector('.gq-body').scrollTop = 0;
+    var body = el.querySelector('.gq-body');
+    if (body) body.scrollTop = 0;
     var sec = parseInt(el.getAttribute('data-cd') || '0', 10);
     if (sec > 0) startCd(el.querySelector('.gq-btn[data-cdbtn]'), sec);
   }
 
-  function open(showNo, isPreview, displayNo) {
+  function open(fl, isPreview, displayNo) {
     preview = !!isPreview;
-    flow = FLOWS[showNo] || FLOWS[1];
+    flow = (fl || ['s4', 's5']).slice();
     idx = 0;
     var badge = document.getElementById('gqS3Badge');
-    if (badge) badge.textContent = '风险提醒 · 第 ' + (displayNo || showNo) + ' 次';
-    var img = document.getElementById('gqQr');
-    if (img && img.getAttribute('src') !== QR_SRC) img.src = QR_SRC;
+    if (badge) badge.textContent = '风险提醒 · 第 ' + (displayNo || 1) + ' 次';
+    paintSponsor();
     var mask = document.getElementById('gqMask');
     mask.classList.add('on');
     mask.setAttribute('aria-hidden', 'false');
@@ -581,6 +636,9 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     if (idx >= flow.length) { finish(); return; }
     showStep(flow[idx]);
   }
+
+  /* 拒绝赞助 → 理解页 */
+  function reject() { showStep('s6'); }
 
   function close() {
     var mask = document.getElementById('gqMask');
@@ -597,7 +655,8 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
   function finish() {
     if (!preview) {
       var s = load();
-      s.count = Math.min(s.count + 1, BATCH_SIZE);
+      var size = batchSize(s);
+      s.count = Math.min(s.count + 1, size);
       s.lastShowAt = Date.now();
       s.totalShows = (s.totalShows || 0) + 1;
       save(s);
@@ -606,7 +665,7 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     renderDbg();
   }
 
-  /* ---------- 自动触发 ---------- */
+  /* ---------------- 自动触发 ---------------- */
   function boot() {
     var s = load();
     if (!s.firstRunAt) s.firstRunAt = Date.now();
@@ -615,22 +674,21 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     renderDbg();
 
     var now = Date.now();
-    var showNo, displayNo;
-    if (s.count >= BATCH_SIZE) {
-      if (now < nextBatchAt(s)) return;                        // 还没到下一批
+    var size = batchSize(s);
+
+    if (s.count >= size) {
+      if (now < nextBatchAt(s)) return;                       // 批次未到期
       s.batch += 1; s.count = 0; s.batchStartAt = now; save(s);
-      /* 新批次第 1 次：风险简版 + 赞助（对应「一个星期之后」的提示） */
-      showNo = 2; displayNo = 1;
-    } else {
-      if (s.count > 0 && now - s.lastShowAt < GAP_MS) return;   // 本批冷却中
-      displayNo = s.count + 1;
-      /* 首批第 1 次是完整两页风险；后续批次第 1 次用简版+赞助 */
-      showNo = (s.batch >= 2 && displayNo === 1) ? 2 : Math.min(displayNo, 3);
+    } else if (s.count > 0 && now - s.lastShowAt < GAP_MS) {
+      return;                                                 // 本批冷却中
     }
-    setTimeout(function () { open(showNo, false, displayNo); renderDbg(); }, 420);
+
+    var n = s.count + 1;
+    var fl = flowFor(s, n);
+    setTimeout(function () { open(fl, false, n); renderDbg(); }, 420);
   }
 
-  /* ---------- 调试面板 ---------- */
+  /* ---------------- 调试面板 ---------------- */
   function p2(n) { return (n < 10 ? '0' : '') + n; }
   function fmt(t) {
     if (!t) return '—';
@@ -650,14 +708,14 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
   function renderDbg() {
     var kv = document.getElementById('gqDbgKv');
     if (!kv) return;
-    var s = load(), now = Date.now();
+    var s = load(), now = Date.now(), size = batchSize(s);
     var lines = [];
-    lines.push('<i>批次</i> 第 <b>' + (s.batch || 1) + '</b> 批 · 本批已弹 <b>' + s.count + '/' + BATCH_SIZE + '</b>');
+    lines.push('<i>批次</i> 第 <b>' + (s.batch || 1) + '</b> 批 · 本批已弹 <b>' + s.count + '/' + size + '</b>');
     lines.push('<i>累计</i> <b>' + s.totalShows + '</b> 次');
     lines.push('<i>首次</i> ' + fmt(s.firstRunAt));
     lines.push('<i>上次</i> ' + fmt(s.lastShowAt));
 
-    if (s.count >= BATCH_SIZE) {
+    if (s.count >= size) {
       var nb = nextBatchAt(s);
       lines.push('<i>下批</i> ' + fmt(nb) + '（' + dur(nb - now) + '）');
     } else if (s.count > 0) {
@@ -668,20 +726,23 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     }
     kv.innerHTML = lines.join('<br>');
     var btn = document.getElementById('gqDbgFab');
-    if (btn) btn.title = '弹窗调试 · 第' + (s.batch || 1) + '批 ' + s.count + '/3';
+    if (btn) btn.title = '弹窗调试 · 第' + (s.batch || 1) + '批 ' + s.count + '/' + size;
   }
 
   function act(a) {
     var s;
-    if (a === 's1' || a === 's2' || a === 's3') { open(parseInt(a.charAt(1), 10), true); return; }
+    if (a === 'first') { open(['s1', 's2'], true, 1); return; }
+    if (a === 'b2n1')  { open(['s3', 's4', 's5'], true, 1); return; }
+    if (a === 'b2n2')  { open(['s4', 's5'], true, 2); return; }
+    if (a === 'b2n3')  { open(['s4', 's5'], true, 3); return; }
     if (a === 'month') {
       s = load();
-      s.batch = Math.max(2, s.batch + 1);
+      s.batch = Math.max(3, s.batch + 1);
       s.batchStartAt = Date.now() - MONTH_DELAY - HOUR;
       s.count = 0;
       save(s);
       renderDbg();
-      open(2, true, 1);       // 预览「新批次第 1 次」：风险简版 + 赞助
+      open(['s4', 's5'], true, 1);      // 每月批次：纯赞助
       return;
     }
     if (a === 'reset') {
@@ -716,8 +777,19 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     });
   }
 
-  /* ---------- 对外 ---------- */
-  window.GQ = { next: next, finish: finish, close: close, open: open };
+  /* ---------------- 赞赏信息（data.json → site.sponsor） ---------------- */
+  function applySponsor(sp) {
+    if (!sp || typeof sp !== 'object') return;
+    if (sp.qr) SP.qr = sp.qr;
+    if (sp.qq) SP.qq = String(sp.qq);
+    paintSponsor();
+  }
+  document.addEventListener('hjk:data', function (e) {
+    applySponsor(e.detail && e.detail.site && e.detail.site.sponsor);
+  });
+
+  /* ---------------- 启动 ---------------- */
+  window.GQ = { next: next, finish: finish, reject: reject, close: close, open: open };
 
   function start() {
     initDbg();
@@ -1481,6 +1553,14 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     renderGroups();
     pickPin();
     render();
+    /* 把 site.sponsor（赞赏二维码 / QQ）交给弹窗模块 */
+    try {
+      document.dispatchEvent(new CustomEvent('hjk:data', { detail: raw }));
+    } catch (e) {
+      var ev = document.createEvent('CustomEvent');
+      ev.initCustomEvent('hjk:data', true, false, raw);
+      document.dispatchEvent(ev);
+    }
   }
 
   function showLoadError(err) {
