@@ -412,9 +412,9 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       </div>
       <div class="gq-body scroll">
         <div style="text-align:center"><span class="gq-badge" id="gqS3Badge">风险提醒</span></div>
-        <div class="gq-item red"><span class="dot">●</span><span><b>接口仍由爬虫采集。</b>来源第三方、非人工审核，可用性与安全性不作任何保证。</span></div>
+        <div class="gq-item red"><span class="dot">●</span><span><b>爬虫街口有风险。</b>接口来源第三方、非人工审核，可用性与安全性不作任何保证。</span></div>
         <div class="gq-item amber"><span class="dot">●</span><span><b>请勿违规使用。</b>禁止用于传播违法信息、侵犯他人知识产权或绕过合法订阅付费。</span></div>
-        <div class="gq-item blue"><span class="dot">●</span><span><b>风险自负。</b>本应用为本地网页，一切使用后果由你自行承担，与开发者无关。</span></div>
+        <div class="gq-item blue"><span class="dot">●</span><span><b>风险自负。</b>使用本应用一切使用后果由你自行承担，与开发者无关。</span></div>
         <div class="gq-note">详细的风险与法律提示，已在首次打开时完整告知。这次只做简要提醒。</div>
       </div>
       <div class="gq-foot">
@@ -425,18 +425,17 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     <!-- 赞助页 -->
     <section class="gq-step" id="gq-s4">
       <div class="gq-head">
-        <span class="gq-ico">☕</span>
-        <div class="gq-title">已经用了一段时间了</div>
+        <span class="gq-ico"></span>
+        <div class="gq-title">你已经用了一段时间了</div>
       </div>
       <div class="gq-body">
-        <p>这个本地网页应用，已经陪你走过一段时间。</p>
-        <p style="margin-top:14px">如果它确实帮你省下了<br>到处找接口、一个个试链接的时间，</p>
-        <p class="gq-hl" style="margin-top:10px;font-size:14.5px">不妨请我喝杯咖啡 ☕</p>
+        <p style="margin-top:14px">如果本应用确实帮你省下了<br>到处找接口、一个个试链接的时间，</p>
+        <p class="gq-hl" style="margin-top:10px;font-size:14.5px">不妨给开发者加个鸡腿</p>
         <p style="font-size:11.5px;color:#8b9eb0;margin-top:16px;line-height:1.7">不打赏也能继续用，功能完全一样，<br>白嫖永远是第一原则。</p>
       </div>
       <div class="gq-foot">
-        <button class="gq-btn" onclick="GQ.next()">请我喝一杯 ☕</button>
-        <button class="gq-btn sec" onclick="GQ.reject()">先不用了，继续白嫖</button>
+        <button class="gq-btn" onclick="GQ.next()">好的，给他加个鸡腿</button>
+        <button class="gq-btn sec" onclick="GQ.reject()">下次一定，继续白嫖</button>
       </div>
     </section>
 
@@ -450,7 +449,7 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
         <p style="font-size:12.5px;font-weight:600;color:#e64a19;margin-bottom:8px">微信扫码，随缘即可</p>
         <img class="gq-qr" id="gqQr" alt="微信赞赏二维码">
         <div class="gq-qq">凭赞助截图加 Q：<b id="gqQq">—</b><br>有资源优先分享给你</div>
-        <p class="gq-freq">弹窗频率：每月 3 次</p>
+        <p class="gq-freq">自动弹窗频率：每月 3 次</p>
       </div>
       <div class="gq-foot">
         <button class="gq-btn" onclick="GQ.finish()">完成并关闭</button>
@@ -460,17 +459,14 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     <!-- 拒绝赞助 · 理解页 -->
     <section class="gq-step" id="gq-s6">
       <div class="gq-head">
-        <span class="gq-ico">🙏</span>
-        <div class="gq-title">完全理解</div>
       </div>
       <div class="gq-body">
-        <p>不打赏真的没关系，白嫖本来就是本站的初衷。</p>
         <p style="margin-top:14px">这个站会继续免费开放，接口照旧更新，<br>功能一分不少。</p>
-        <p style="font-size:11.5px;color:#8b9eb0;margin-top:16px;line-height:1.7">哪天心情好、手头宽裕了，<br>再回来请我喝一杯也不迟 🙂</p>
-        <p class="gq-freq">弹窗频率：每月 3 次</p>
+        <p style="font-size:11.5px;color:#8b9eb0;margin-top:16px;line-height:1.7">哪天心情好、手头宽裕了，<br>再回来请给他加个鸡腿也不迟 🙂</p>
+        <p class="gq-freq">自动弹窗频率：每月 3 次</p>
       </div>
       <div class="gq-foot">
-        <button class="gq-btn" onclick="GQ.finish()">继续使用</button>
+        <button class="gq-btn" onclick="GQ.finish()">退出继续</button>
       </div>
     </section>
 
@@ -484,9 +480,9 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       <span class="qico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.9-6.4"/><path d="M20.5 3.5V9H15"/></svg></span>
       <span>刷新本页</span>
     </button>
-    <a class="gq-quick-item" href="https://0.wudaozhe.net/into" target="_blank" rel="noopener">
+    <a class="gq-quick-item" href="https://0.wudaozhe.net" target="_blank" rel="noopener">
       <span class="qico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg></span>
-      <span>打开接口备份站</span>
+      <span>打开备份接口在线站点</span>
     </a>
     <button class="gq-quick-item" data-act="sponsor">
       <span class="qico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 10h2.5a2.5 2.5 0 0 1 0 5H16"/><path d="M7 4.5v2M10.5 4.5v2"/></svg></span>
