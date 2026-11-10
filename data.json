@@ -20,6 +20,8 @@
    "name": "直播源",
    "isApi": true
   },
+    { "id": "caiji", "name": "采集", "isApi": true },
+    { "id": "python", "name": "Python", "isApi": true },
   {
    "id": "cat",
    "name": "猫源",
