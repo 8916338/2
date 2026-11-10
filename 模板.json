@@ -8,6 +8,8 @@
     { "id": "single", "name": "单仓源", "isApi": true },
     { "id": "multi", "name": "多仓源", "isApi": true },
     { "id": "live", "name": "直播源", "isApi": true },
+    { "id": "caiji", "name": "采集", "isApi": true },
+    { "id": "python", "name": "Python", "isApi": true },
     { "id": "cat", "name": "猫源", "isApi": true },
     { "id": "music", "name": "音源", "isApi": true },
     { "id": "book", "name": "书源", "isApi": true },
