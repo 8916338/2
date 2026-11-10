@@ -233,8 +233,8 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
   'use strict';
 
   var DATA_URL = 'data.json';
-  var TIMEOUT_MS = 6000;          // 单 URL 超时：6 秒
-  var URL_CONCURRENCY = 128;      // 软上限，实际并发由浏览器控制
+  var TIMEOUT_MS = 6000;
+  var URL_CONCURRENCY = 128;
   var SLOW_MS = 1500;
   var NO_W = 1e9;
 
@@ -715,12 +715,10 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     });
   }
 
-  // 单 URL 探测：最多一次请求 + 一次 https 兜底，避免多次超时叠加
   function probe(url) {
     var mixed = location.protocol === 'https:' && /^http:\/\//i.test(url);
 
     if (mixed) {
-      // 混合内容：http 直连会被浏览器拦截，直接走 https 等价地址
       var alt = 'https://' + url.slice(7);
       return timedFetch(noCache(alt), TIMEOUT_MS).then(function (r) {
         if (r.ok) return r;
@@ -759,7 +757,6 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     }
   }
 
-  // 软上限很高，让所有待检测 URL 都立即进入 checking 状态
   function ensureWorkers() {
     while (pendingUrls.length > 0 && activeWorkers < URL_CONCURRENCY) {
       activeWorkers++;
@@ -913,11 +910,21 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     }
     renderGroups();
     render();
+
+    // 切换分组后页面立即回到顶部
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    } catch (err) {
+      window.scrollTo(0, 0);
+    }
+
+    // 仅让分组栏自身横向滚动，把当前选中项居中，不影响页面纵向位置
     var chip = groupsEl.querySelector('.chip.active');
-    if (chip && chip.scrollIntoView) {
-      try {
-        chip.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
-      } catch (err) {}
+    if (chip) {
+      var target = chip.offsetLeft - (groupsEl.clientWidth - chip.offsetWidth) / 2;
+      if (target < 0) target = 0;
+      try { groupsEl.scrollTo({ left: target, behavior: 'smooth' }); }
+      catch (err2) { groupsEl.scrollLeft = target; }
     }
   });
 
