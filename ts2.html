@@ -504,6 +504,10 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       <span class="qico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.9-6.4"/><path d="M20.5 3.5V9H15"/></svg></span>
       <span>刷新本页</span>
     </button>
+    <button class="gq-quick-item" data-act="checkAll">
+      <span class="qico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21"/></svg></span>
+      <span id="gqCheckText">全局检测</span>
+    </button>
     <a class="gq-quick-item" href="https://0.wudaozhe.net" target="_blank" rel="noopener">
       <span class="qico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg></span>
       <span>打开备份接口在线站点</span>
@@ -779,6 +783,13 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     return true;
   }
 
+  function syncCheckLabel() {
+    var t = document.getElementById('gqCheckText');
+    if (!t) return;
+    var on = (typeof window.HJK_IS_BULK === 'function') && window.HJK_IS_BULK();
+    t.textContent = on ? '全局检测 · 进行中' : '全局检测';
+  }
+
   function initQuick() {
     var fab = document.getElementById('gqQuickFab');
     var panel = document.getElementById('gqQuickPanel');
@@ -787,7 +798,7 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     function setOpen(open) {
       panel.classList.toggle('on', open);
       fab.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) renderDbg();
+      if (open) { renderDbg(); syncCheckLabel(); }
     }
     function toggle() { setOpen(!panel.classList.contains('on')); }
 
@@ -804,6 +815,11 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       if (a === 'reload') {
         setOpen(false);
         location.reload();
+        return;
+      }
+      if (a === 'checkAll') {
+        setOpen(false);
+        if (typeof window.HJK_CHECK === 'function') window.HJK_CHECK();
         return;
       }
       /* 功能入口：直接进二维码页，独立流程，不写进度 */
@@ -905,9 +921,12 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
   var NO_W = 1e9;
 
   var RAW = null, DATA = null;
-  var pendingUrls = [];
+  var pendingUrls = [];        // 普通档：当前面板主动检测
+  var vipUrls = [];            // 插队档：检测中切换分组后的新面板
+  var bulkUrls = [];           // 后排档：全局检测里当前面板之外的部分
   var activeWorkers = 0;
   var activeCardCount = 0;
+  var bulkRunning = false;     // 全局检测进行中
 
   var state = {
     group: 'all', keyword: '',
@@ -1424,32 +1443,60 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
   }
 
   function ensureWorkers() {
-    while (pendingUrls.length > 0 && activeWorkers < URL_CONCURRENCY) {
+    while (activeWorkers < URL_CONCURRENCY && hasAnyWaiting()) {
       activeWorkers++;
       worker();
     }
   }
 
+  function bankWaiting(arr) {
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i].u.status === 'wait') return true;
+    }
+    return false;
+  }
+
+  function hasAnyWaiting() {
+    return bankWaiting(vipUrls) || bankWaiting(pendingUrls) || bankWaiting(bulkUrls);
+  }
+
+  /* 按优先级取任务：插队档 → 普通档 → 后排档 */
+  function takeJob() {
+    var banks = [vipUrls, pendingUrls, bulkUrls];
+    for (var b = 0; b < banks.length; b++) {
+      var arr = banks[b];
+      while (arr.length) {
+        var job = arr.shift();
+        if (job.u.status === 'wait') return job;
+      }
+    }
+    return null;
+  }
+
   function worker() {
-    while (pendingUrls.length) {
-      var job = pendingUrls.shift();
-      if (job.u.status !== 'wait') continue;
-
-      job.u.status = 'checking';
-      patchUrl(job.u.uid);
-
-      (function (task) {
-        probe(task.u.url).then(function (r) {
-          task.u.status = r.ok ? 'ok' : 'bad';
-          task.u.lat = r.ok ? r.lat : null;
-          patchUrl(task.u.uid);
-          checkCardDone(task.it);
-          worker();
-        });
-      })(job);
+    var job = takeJob();
+    if (!job) {
+      activeWorkers--;
+      if (bulkRunning && activeWorkers === 0) {
+        bulkRunning = false;
+        updateProgressView();
+        toast('全局检测完成');
+      }
       return;
     }
-    activeWorkers--;
+
+    job.u.status = 'checking';
+    patchUrl(job.u.uid);
+
+    (function (task) {
+      probe(task.u.url).then(function (r) {
+        task.u.status = r.ok ? 'ok' : 'bad';
+        task.u.lat = r.ok ? r.lat : null;
+        patchUrl(task.u.uid);
+        checkCardDone(task.it);
+        worker();
+      });
+    })(job);
   }
 
   function checkCardDone(it) {
@@ -1465,18 +1512,85 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
     updateProgressView();
   }
 
-  function enqueueCard(it) {
-    if (it._checking) return;
+  function enqueueCard(it, tier, noRefresh) {
+    if (it._checking) return false;
+    if (!it._urls || !it._urls.length) return false;
 
     it._urls.forEach(function (u) { u.status = 'wait'; u.lat = null; });
     it._checking = true;
     itemStatus(it);
     activeCardCount++;
 
-    refreshCard(it);
-    updateProgressView();
+    if (!noRefresh) refreshCard(it);
 
-    it._urls.forEach(function (u) { pendingUrls.push({ it: it, u: u }); });
+    var bank = tier === 'vip' ? vipUrls : (tier === 'bulk' ? bulkUrls : pendingUrls);
+    it._urls.forEach(function (u) { bank.push({ it: it, u: u }); });
+    return true;
+  }
+
+  /* 单张卡片检测（点卡片右上角） */
+  function checkCard(it) {
+    if (enqueueCard(it)) {
+      updateProgressView();
+      ensureWorkers();
+    }
+  }
+
+  /* 全局检测：当前面板优先入队，其余排到后排档 */
+  function checkGlobal() {
+    if (!DATA || !DATA.items) { toast('数据还没加载完，请稍候'); return 0; }
+    var panel = DATA.items.filter(matched);
+
+    /* 已经在跑：把当前面板直接提到队首，不重头再来 */
+    if (bulkRunning) {
+      promotePanel(panel);
+      updateProgressView();
+      toast('已将当前面板 ' + panel.length + ' 条提到队首');
+      return panel.length;
+    }
+
+    var inPanel = {};
+    panel.forEach(function (it) { inPanel[it._i] = 1; });
+
+    var y = window.scrollY || window.pageYOffset || 0;
+    var n = 0;
+
+    panel.forEach(function (it) { if (enqueueCard(it, 'normal', true)) n++; });
+    DATA.items.forEach(function (it) {
+      if (inPanel[it._i]) return;
+      if (enqueueCard(it, 'bulk', true)) n++;
+    });
+
+    if (!n) { toast('当前没有可检测的条目'); return 0; }
+
+    bulkRunning = true;
+    render();
+    try { window.scrollTo(0, y); } catch (e) {}
+    updateProgressView();
+    ensureWorkers();
+    toast('全局检测 ' + n + ' 条，当前面板优先');
+    return n;
+  }
+
+  /* 检测中切换分组：把新面板的任务提到插队档 */
+  function promotePanel(pool) {
+    var mark = {};
+    pool.forEach(function (it) { mark[it._i] = 1; });
+
+    function lift(arr) {
+      var keep = [];
+      arr.forEach(function (job) {
+        if (mark[job.it._i] && job.u.status === 'wait') vipUrls.push(job);
+        else keep.push(job);
+      });
+      return keep;
+    }
+    pendingUrls = lift(pendingUrls);
+    bulkUrls = lift(bulkUrls);
+
+    pool.forEach(function (it) {
+      if (!it._checking) enqueueCard(it, 'vip', true);
+    });
     ensureWorkers();
   }
 
@@ -1574,6 +1688,10 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       el('q').value = '';
       el('qClear').style.display = 'none';
     }
+
+    /* 全局检测进行中：新面板的任务插到队首 */
+    if (bulkRunning) promotePanel(DATA.items.filter(matched));
+
     renderGroups();
     render();
 
@@ -1601,7 +1719,7 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       e.preventDefault();
       var idx = +btn.getAttribute('data-i');
       var it = DATA.items[idx];
-      if (it) enqueueCard(it);
+      if (it) checkCard(it);
       return;
     }
     var cp = e.target.closest('.cp');
@@ -1659,6 +1777,10 @@ html.grabbing *{user-select:none !important;-webkit-user-select:none !important}
       '<br>请确认 data.json 与 index.html 在同一目录，且通过本地服务器访问</span></div>';
     setProgress('数据加载失败', false);
   }
+
+  /* 供快捷菜单调用（两块脚本各自独立作用域） */
+  window.HJK_CHECK = function () { return checkGlobal(); };
+  window.HJK_IS_BULK = function () { return bulkRunning; };
 
   enableDragScroll(groupsEl);
   setupToolbarShadow();
